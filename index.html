@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="si">
+  <head>
+    <!--monetag verification-->
+    <meta name="monetag" content="bbaca9c1a7c3bd8c9cfc50446aff8d18">
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="/logo.png" />
+    
+    <!-- Primary SEO Title & Description -->
+    <title>කුසුමාසන දේවි Cinema - Watch Sinhala Movies & TV Shows Online Free HD</title>
+    <meta name="title" content="කුසුමාසන දේවි Cinema - Watch Sinhala Movies & TV Shows Online Free HD" />
+    <meta name="description" content="Kusumasana Devi Cinema එකෙන් නවතම සිංහල චිත්‍රපටි, ටීවී ෂෝ සහ HD Movies නොමිලේ නරඹන්න. Fast streaming, Sinhala subtitles, 1080p HD downloads available." />
+    <meta name="robots" content="index, follow" />
+
+    <!-- Target Keywords -->
+    <meta name="keywords" content="Kusumasana Devi, Kusumasana Devi full movie, Sinhala movies online, Watch Sinhala movies free, Sinhala subtitles, Sinhala dubbing movies, Cinesubz, Baiscope, Sinhalasub, HD Sinhala films, Sri Lanka cinema streaming, Download Sinhala movies, 1080p Sinhala movies, TV shows Sinhala, Kusumasana Devi streaming, කුසුමාසන දේවි, දෝන කැතරිනා, සිංහල චිත්‍රපටි, සිනමා" />
+
+    <!-- Open Graph / Facebook Meta Tags -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="කුසුමාසන දේවි Cinema - Watch Sinhala Movies Online Free" />
+    <meta property="og:description" content="නවතම සිංහල චිත්‍රපටි සහ TV Shows නොමිලේ 1080p HD තාක්ෂණයෙන් නරඹන්න." />
+    <meta property="og:image" content="/logo.png" />
+
+    <!-- Twitter Meta Tags -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:title" content="කුසුමාසන දේවි Cinema" />
+    <meta property="twitter:description" content="Watch Sinhala Movies & TV Shows in HD for free on Kusumasana Devi." />
+    <meta property="twitter:image" content="/logo.png" />
+
+    <!-- Google Fonts for Inter, Montserrat, Abhaya Libre and Noto Sans Sinhala -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Abhaya+Libre:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@400;500;600;700;800&family=Noto+Sans+Sinhala:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+      /* Logo Preloader Styles */
+      #preloader {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: #0a0a1a;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 99999;
+        transition: opacity 0.5s ease, visibility 0.5s ease;
+      }
+
+      .logo-container {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .animating-logo {
+        width: 110px;
+        height: 110px;
+        object-fit: contain;
+        animation: logoPulse 1.8s infinite ease-in-out;
+        z-index: 2;
+      }
+
+      .loading-ring {
+        position: absolute;
+        width: 155px;
+        height: 155px;
+        border: 3px solid rgba(59, 130, 246, 0.15);
+        border-top: 3px solid #ffd700;
+        border-right: 3px solid #3b82f6;
+        border-radius: 50%;
+        animation: spinRing 1.2s linear infinite;
+      }
+
+      .preloader-title {
+        margin-top: 24px;
+        font-family: 'Noto Sans Sinhala', 'Montserrat', sans-serif;
+        color: #e2e8f0;
+        font-size: 1.1rem;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      @keyframes logoPulse {
+        0% { transform: scale(0.95); opacity: 0.85; filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.4)); }
+        50% { transform: scale(1.08); opacity: 1; filter: drop-shadow(0 0 22px rgba(59, 130, 246, 0.8)); }
+        100% { transform: scale(0.95); opacity: 0.85; filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.4)); }
+      }
+
+      @keyframes spinRing {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    </style>
+  </head>
+  <body class="bg-[#0a0a1a] text-[#ffffff] font-sans antialiased overflow-x-hidden selection:bg-blue-600 selection:text-white">
+    <!-- Logo Preloader Animation -->
+    <div id="preloader">
+      <div class="logo-container">
+        <img src="/logo.png" alt="කුසුමාසන දේවි Cinema Logo" class="animating-logo" />
+        <div class="loading-ring"></div>
+      </div>
+      <div class="preloader-title">
+        <span class="text-amber-400">කුසුමාසන දේවි</span>
+        <span class="text-xs px-2 py-0.5 rounded bg-blue-600/30 text-blue-400 border border-blue-500/30">CINEMA HD</span>
+      </div>
+    </div>
+
+    <div id="root"></div>
+
+    <script type="module" src="/src/main.tsx"></script>
+
+    <script>
+      // Automatically hide preloader when page assets load
+      window.addEventListener('load', () => {
+        const loader = document.getElementById('preloader');
+        if (loader) {
+          loader.style.opacity = '0';
+          setTimeout(() => {
+            loader.style.visibility = 'hidden';
+            loader.style.display = 'none';
+          }, 500);
+        }
+      });
+      // Fallback timeout in case some external media delays window.load
+      setTimeout(() => {
+        const loader = document.getElementById('preloader');
+        if (loader && loader.style.display !== 'none') {
+          loader.style.opacity = '0';
+          setTimeout(() => {
+            loader.style.visibility = 'hidden';
+            loader.style.display = 'none';
+          }, 500);
+        }
+      }, 1800);
+    </script>
+  </body>
+</html>
+

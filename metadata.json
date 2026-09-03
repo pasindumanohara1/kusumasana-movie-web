@@ -1,0 +1,8 @@
+{
+  "name": "කුසුමාසන දේවි - Kusumasana Devi Cinema",
+  "description": "Kusumasana Devi Cinema එකෙන් නවතම සිංහල චිත්‍රපටි, ටීවී ෂෝ සහ HD Movies නොමිලේ නරඹන්න. Fast streaming, Sinhala subtitles, 1080p HD downloads available.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
