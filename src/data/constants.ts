@@ -2,7 +2,7 @@ import type React from 'react';
 import { FakeButtonIdea, StreamServer } from '../types';
 
 export const DIRECT_MONETIZATION_LINK =
-  'https://www.profitableratecpmnetwork.com/etgx4q8yi?key=842d286abb0aa3932f0e0ca01c3b3e8f';
+  'https://www.profitableratecpmnetwork.com/sbai78a94?key=b08368874c6d5dab01fbf64cc3d22e67';
 
 // Modern Sinhala UI Translation Dictionary
 export const UI_TRANSLATIONS = {

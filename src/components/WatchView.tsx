@@ -38,6 +38,7 @@ import {
 import { buildWatchUrl, syncUrlHistory } from '../utils/urlRouter';
 import { MediaCard } from './MediaCard';
 import { useWatchlist } from '../context/WatchlistContext';
+import { AdsterraBanner, AdsterraResponsiveLeaderboard, AdsterraNativeBanner } from './AdsterraBanner';
 
 interface WatchViewProps {
   mediaItem: MediaItem;
@@ -603,6 +604,9 @@ export const WatchView: React.FC<WatchViewProps> = ({
               <span>Download 1080p HD</span>
             </button>
           </div>
+
+          {/* Under Player Responsive Adsterra Leaderboard (728x90 Desktop, 320x50 Mobile) */}
+          <AdsterraResponsiveLeaderboard label="Sponsored High-Speed Mirror" />
         </div>
 
         {/* TV Show Season & Episode Selector (Appears for TV Shows only) */}
@@ -745,6 +749,15 @@ export const WatchView: React.FC<WatchViewProps> = ({
             </div>
           </div>
         )}
+
+        {/* Adsterra Native Banner & Sponsored Rectangle */}
+        <div className="space-y-4">
+          <div className="flex flex-wrap justify-center items-center gap-4">
+            <AdsterraBanner format="300x250" label="VIP Server Stream (Sponsored)" />
+            <AdsterraBanner format="160x300" label="Direct HD Node" className="hidden sm:flex" />
+          </div>
+          <AdsterraNativeBanner />
+        </div>
 
         {/* Recommended Content Grid (ඔයා කැමති විය හැකි වෙනත් චිත්‍රපටි) */}
         {recommended.length > 0 && (

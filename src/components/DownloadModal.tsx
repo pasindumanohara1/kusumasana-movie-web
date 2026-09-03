@@ -12,6 +12,7 @@ import {
   Sparkles
 } from 'lucide-react';
 import { DIRECT_MONETIZATION_LINK, handleFakeButtonClick } from '../data/constants';
+import { AdsterraBanner } from './AdsterraBanner';
 
 interface DownloadModalProps {
   isOpen: boolean;
@@ -136,6 +137,11 @@ export const DownloadModal: React.FC<DownloadModalProps> = ({
               </div>
             ))}
           </div>
+        </div>
+
+        {/* Sponsored Fast Download Mirror Banner */}
+        <div className="flex justify-center my-2">
+          <AdsterraBanner format="300x250" label="VIP Fast Mirror (Sponsored)" />
         </div>
 
         {/* Primary Direct Download CTA Button */}

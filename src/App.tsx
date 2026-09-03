@@ -9,6 +9,7 @@ import { WatchView } from './components/WatchView';
 import { DownloadModal } from './components/DownloadModal';
 import { RoyalQueenModal } from './components/RoyalQueenModal';
 import { AdBanner } from './components/AdBanner';
+import { AdsterraBanner, AdsterraResponsiveLeaderboard, AdsterraNativeBanner } from './components/AdsterraBanner';
 import { FakeButtonsBar } from './components/FakeButtonsBar';
 import { Footer } from './components/Footer';
 import { PaginationControls } from './components/PaginationControls';
@@ -296,6 +297,9 @@ const MainContent: React.FC = () => {
                   {/* High-CTR Monetization Hub with 20 Ideas */}
                   <FakeButtonsBar onOpenDownloadModal={() => setIsDownloadModalOpen(true)} />
 
+                  {/* Top Responsive Adsterra Leaderboard (728x90 Desktop, 320x50 Mobile) */}
+                  <AdsterraResponsiveLeaderboard label="Sponsored High-Speed Stream" />
+
                   {/* Section 1: දැන් ට්‍රෙන්ඩින් (Trending Now) */}
                   <section id="trending-section" className="space-y-4">
                     <div className="flex items-center justify-between">
@@ -328,8 +332,10 @@ const MainContent: React.FC = () => {
                     </div>
                   </section>
 
-                  {/* In-feed Responsive Ad Banner */}
-                  <AdBanner type="banner" slotName="Home Top InFeed" />
+                  {/* In-feed Adsterra 468x60 Banner */}
+                  <div className="flex justify-center my-4">
+                    <AdsterraBanner format="468x60" label="Sponsored HD Streaming" />
+                  </div>
 
                   {/* Section 2: ජනප්‍රිය චිත්‍රපටි (Popular Movies) */}
                   <section id="popular-movies-section" className="space-y-4">
@@ -375,8 +381,8 @@ const MainContent: React.FC = () => {
                     </div>
                   </section>
 
-                  {/* Native Sponsored Card Banner */}
-                  <AdBanner type="native" slotName="Home Mid Native" />
+                  {/* Adsterra Native Sponsored Recommendations */}
+                  <AdsterraNativeBanner />
 
                   {/* Section 3: ජනප්‍රිය ටීවී ෂෝ (Popular TV Shows) */}
                   <section id="popular-tv-section" className="space-y-4">
@@ -421,6 +427,9 @@ const MainContent: React.FC = () => {
                       </button>
                     </div>
                   </section>
+
+                  {/* Mid Responsive Leaderboard (728x90 Desktop, 320x50 Mobile) */}
+                  <AdsterraResponsiveLeaderboard label="Sponsored Entertainment Network" />
 
                   {/* Section 4: ඉහළම ඇගයීම් (Top Rated) */}
                   <section id="top-rated-section" className="space-y-4">
@@ -497,6 +506,8 @@ const MainContent: React.FC = () => {
                       ))}
                     </div>
 
+                    <AdsterraResponsiveLeaderboard label="Sponsored HD Movies Network" />
+
                     <PaginationControls
                       currentPage={currentPage}
                       totalPages={50}
@@ -558,6 +569,8 @@ const MainContent: React.FC = () => {
                       ))}
                     </div>
 
+                    <AdsterraResponsiveLeaderboard label="Sponsored TV Series Network" />
+
                     <PaginationControls
                       currentPage={currentPage}
                       totalPages={50}
@@ -604,10 +617,13 @@ const MainContent: React.FC = () => {
                     </button>
                   </div>
                 ) : (
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-5">
-                    {watchlist.map((item) => (
-                      <MediaCard key={item.id} item={item} onSelect={handleSelectMedia} />
-                    ))}
+                  <div className="space-y-6">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-5">
+                      {watchlist.map((item) => (
+                        <MediaCard key={item.id} item={item} onSelect={handleSelectMedia} />
+                      ))}
+                    </div>
+                    <AdsterraResponsiveLeaderboard label="Sponsored Watchlist Network" />
                   </div>
                 )}
               </div>
@@ -628,6 +644,11 @@ const MainContent: React.FC = () => {
         isOpen={isQueenModalOpen}
         onClose={() => setIsQueenModalOpen(false)}
       />
+
+      {/* Global Above-Footer Adsterra Responsive Leaderboard */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 my-6">
+        <AdsterraResponsiveLeaderboard label="Sponsored Global Network (Kusumasana Cinema)" />
+      </div>
 
       {/* Global Footer */}
       <Footer
