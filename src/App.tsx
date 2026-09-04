@@ -599,7 +599,7 @@ const MainContent: React.FC = () => {
                 </div>
 
                 {watchlist.length === 0 ? (
-                  <div className="py-20 text-center bg-[#16213e] rounded-3xl border border-blue-900/30 p-8 space-y-4 max-w-lg mx-auto shadow-xl">
+                  <div className="py-12 text-center bg-[#16213e] rounded-3xl border border-blue-900/30 p-8 space-y-4 max-w-lg mx-auto shadow-xl">
                     <div className="w-16 h-16 rounded-full bg-blue-600/20 text-blue-400 flex items-center justify-center mx-auto">
                       <Bookmark className="w-8 h-8" />
                     </div>
@@ -609,6 +609,12 @@ const MainContent: React.FC = () => {
                     <p className="text-xs text-gray-400 leading-relaxed">
                       ඔබ නැරඹීමට කැමති ඕනෑම චිත්‍රපටියක හෝ ටීවී ෂෝ එකක ඇති '+' අයිකනය ක්ලික් කිරීමෙන් මෙහි සුරැකිය හැක.
                     </p>
+
+                    {/* Point #14: Watchlist Empty State Sponsor Ad */}
+                    <div className="flex justify-center my-3">
+                      <AdsterraBanner format="300x250" label="Trending Recommended Movies" />
+                    </div>
+
                     <button
                       onClick={() => handleTabChange('home')}
                       className="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold shadow-lg shadow-blue-600/40 transition-all"

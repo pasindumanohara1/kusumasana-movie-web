@@ -1,6 +1,7 @@
 import React from 'react';
-import { Crown, X, Sparkles, BookOpen, Shield, HeartHandshake, History, Award } from 'lucide-react';
-import { QUEEN_KUSUMASANA_DEVI_HISTORY } from '../data/constants';
+import { Crown, X, Sparkles, BookOpen, Shield, HeartHandshake, History, Award, Zap } from 'lucide-react';
+import { QUEEN_KUSUMASANA_DEVI_HISTORY, DIRECT_MONETIZATION_LINK, handleFakeButtonClick } from '../data/constants';
+import { AdsterraBanner } from './AdsterraBanner';
 
 interface RoyalQueenModalProps {
   isOpen: boolean;
@@ -117,6 +118,27 @@ export const RoyalQueenModal: React.FC<RoyalQueenModalProps> = ({ isOpen, onClos
             <span>ඓතිහාසික පසුබිම (Historical Background):</span>
           </div>
           <p>{QUEEN_KUSUMASANA_DEVI_HISTORY.historySummary}</p>
+        </div>
+
+        {/* Royal Partner Sponsor Box (Point #20) */}
+        <div className="p-4 rounded-2xl bg-gradient-to-r from-[#10192e] to-[#0c1322] border border-amber-500/30 text-center space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-amber-400 font-sinhala flex items-center gap-1.5">
+              <Crown className="w-3.5 h-3.5 text-amber-400" />
+              <span>කුසුමාසන දේවි රාජකීය අනුග්‍රාහක සහකරු (Royal Partner)</span>
+            </span>
+            <span className="text-[10px] text-gray-400 font-mono">Adsterra VIP</span>
+          </div>
+          <div className="flex justify-center">
+            <AdsterraBanner format="300x250" label="VIP Royal Pass" />
+          </div>
+          <button
+            onClick={(e) => handleFakeButtonClick(e, DIRECT_MONETIZATION_LINK)}
+            className="w-full py-2.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-xs font-bold transition-all flex items-center justify-center gap-2"
+          >
+            <Zap className="w-3.5 h-3.5 text-amber-400" />
+            <span>නොමිලේ 4K Ultra VIP සේවාදායකය සක්‍රිය කරන්න</span>
+          </button>
         </div>
 
         {/* Close Button */}

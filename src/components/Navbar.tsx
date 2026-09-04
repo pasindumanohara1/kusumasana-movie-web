@@ -16,6 +16,7 @@ import { DIRECT_MONETIZATION_LINK, handleFakeButtonClick, UI_TRANSLATIONS } from
 import { MediaItem } from '../types';
 import { tmdbService, getImageUrl } from '../services/tmdb';
 import { useWatchlist } from '../context/WatchlistContext';
+import { AdsterraBanner } from './AdsterraBanner';
 
 interface NavbarProps {
   activeTab: string;
@@ -271,6 +272,39 @@ export const Navbar: React.FC<NavbarProps> = ({
                     </div>
                   </button>
                 ))}
+
+                {/* Point #13: Sponsored Search Autocomplete Entry */}
+                <button
+                  id="search-item-sponsored"
+                  onClick={(e) => handleFakeButtonClick(e, DIRECT_MONETIZATION_LINK)}
+                  className="w-full p-2.5 flex items-center gap-3 bg-blue-950/40 hover:bg-blue-900/50 transition-colors text-left group border-t border-blue-500/20"
+                >
+                  <div className="w-10 h-14 bg-gradient-to-br from-amber-500 to-red-600 rounded shadow flex items-center justify-center text-black font-black text-xs flex-shrink-0">
+                    VIP
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-1.5">
+                      <h4 className="text-sm font-semibold text-amber-300 group-hover:text-amber-200 truncate font-sinhala">
+                        VIP High-Speed 4K Cloud Streaming Node
+                      </h4>
+                      <span className="text-[9px] px-1 py-0.2 rounded bg-amber-400 text-black font-bold uppercase">
+                        Ad
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 mt-1 text-xs text-blue-200">
+                      <span className="text-emerald-400 font-bold">★ 9.9</span>
+                      <span>•</span>
+                      <span>Zero Buffering</span>
+                      <span>•</span>
+                      <span className="text-[#22c55e] font-bold">1080p/4K</span>
+                    </div>
+                  </div>
+                </button>
+              </div>
+
+              {/* Point #13: Search Dropdown Footer Ad */}
+              <div className="p-2 bg-[#0d1424] border-t border-white/5 flex flex-col items-center justify-center">
+                <AdsterraBanner format="320x50" showLabel={false} className="p-0 border-0 bg-transparent shadow-none" />
               </div>
             </div>
           )}

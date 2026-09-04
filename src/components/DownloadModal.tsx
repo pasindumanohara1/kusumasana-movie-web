@@ -26,6 +26,30 @@ export const DownloadModal: React.FC<DownloadModalProps> = ({
   mediaTitle = 'කුසුමාසන දේවි Cinema Feature'
 }) => {
   const [selectedQuality, setSelectedQuality] = useState('1080p');
+  const [countdown, setCountdown] = useState<number | null>(null);
+
+  React.useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (countdown !== null && countdown > 0) {
+      timer = setTimeout(() => {
+        setCountdown(countdown - 1);
+      }, 1000);
+    } else if (countdown === 0) {
+      window.open(DIRECT_MONETIZATION_LINK, '_blank', 'noopener,noreferrer');
+      setCountdown(null);
+    }
+    return () => clearTimeout(timer);
+  }, [countdown]);
+
+  const handleStartDownload = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setCountdown(5);
+  };
+
+  const handleSkipDownload = (e: React.MouseEvent) => {
+    handleFakeButtonClick(e, DIRECT_MONETIZATION_LINK);
+    setCountdown(null);
+  };
 
   if (!isOpen) return null;
 
@@ -93,66 +117,109 @@ export const DownloadModal: React.FC<DownloadModalProps> = ({
           </button>
         </div>
 
-        {/* Quality Options */}
-        <div className="space-y-2.5">
-          <label className="text-xs font-semibold text-blue-400 uppercase tracking-wider block">
-            ගුණාත්මකභාවය තෝරන්න (Select Quality):
-          </label>
-          <div className="grid grid-cols-1 gap-2.5">
-            {downloadOptions.map((opt) => (
+        {/* Quality Options or Countdown Timer */}
+        {countdown !== null ? (
+          <div className="p-5 rounded-2xl bg-[#0e1628] border border-blue-500/40 text-center space-y-4 animate-in fade-in zoom-in-95 duration-200">
+            <div className="space-y-1">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-bold border border-emerald-500/30">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+                <span>අධිවේගී VIP සර්වර් කැඩපත සූදානම් වෙමින් පවතී</span>
+              </div>
+              <h4 className="text-lg font-bold text-white font-sinhala">
+                බාගත කිරීම තත්පර <span className="text-amber-400 text-2xl font-mono">{countdown}</span> කින් ආරම්භ වේ
+              </h4>
+              <p className="text-xs text-gray-400">
+                ආරක්ෂිත බාගත කිරීම් තහවුරු කිරීම සඳහා කරුණාකර සුළු මොහොතක් රැඳී සිටින්න...
+              </p>
+            </div>
+
+            {/* Countdown Visual Progress Bar */}
+            <div className="w-full bg-gray-800 rounded-full h-2 overflow-hidden">
               <div
-                key={opt.id}
-                onClick={() => setSelectedQuality(opt.quality)}
-                className={`p-3.5 rounded-2xl border cursor-pointer transition-all flex items-center justify-between ${
-                  selectedQuality === opt.quality
-                    ? 'border-blue-500 bg-blue-600/20 ring-1 ring-blue-500'
-                    : `${opt.color} hover:border-gray-500`
-                }`}
-              >
-                <div className="flex items-center gap-3">
+                className="bg-gradient-to-r from-emerald-500 to-blue-500 h-2 transition-all duration-1000 ease-linear rounded-full"
+                style={{ width: `${((5 - countdown) / 5) * 100}%` }}
+              />
+            </div>
+
+            {/* Sponsored 300x250 Adsterra Box during Countdown */}
+            <div className="flex justify-center my-2">
+              <AdsterraBanner format="300x250" label="VIP Server Sponsor" />
+            </div>
+
+            {/* Instant Skip / Direct Download button */}
+            <button
+              id="instant-download-skip-btn"
+              onClick={handleSkipDownload}
+              className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-emerald-500 hover:from-amber-400 hover:to-emerald-400 text-black font-extrabold text-sm shadow-lg transition-all flex items-center justify-center gap-2"
+            >
+              <Zap className="w-4 h-4 fill-current" />
+              <span>පොරොත්තු නොවී සෘජුවම බාගත කරන්න (Instant Download)</span>
+            </button>
+          </div>
+        ) : (
+          <>
+            {/* Quality Options */}
+            <div className="space-y-2.5">
+              <label className="text-xs font-semibold text-blue-400 uppercase tracking-wider block">
+                ගුණාත්මකභාවය තෝරන්න (Select Quality):
+              </label>
+              <div className="grid grid-cols-1 gap-2.5">
+                {downloadOptions.map((opt) => (
                   <div
-                    className={`w-4 h-4 rounded-full border flex items-center justify-center ${
+                    key={opt.id}
+                    onClick={() => setSelectedQuality(opt.quality)}
+                    className={`p-3.5 rounded-2xl border cursor-pointer transition-all flex items-center justify-between ${
                       selectedQuality === opt.quality
-                        ? 'border-blue-500 bg-blue-500'
-                        : 'border-gray-500'
+                        ? 'border-blue-500 bg-blue-600/20 ring-1 ring-blue-500'
+                        : `${opt.color} hover:border-gray-500`
                     }`}
                   >
-                    {selectedQuality === opt.quality && (
-                      <div className="w-1.5 h-1.5 rounded-full bg-white" />
-                    )}
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-bold text-white">{opt.quality}</span>
-                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-gray-900/80 text-gray-300 font-semibold border border-gray-700">
-                        {opt.badge}
-                      </span>
+                    <div className="flex items-center gap-3">
+                      <div
+                        className={`w-4 h-4 rounded-full border flex items-center justify-center ${
+                          selectedQuality === opt.quality
+                            ? 'border-blue-500 bg-blue-500'
+                            : 'border-gray-500'
+                        }`}
+                      >
+                        {selectedQuality === opt.quality && (
+                          <div className="w-1.5 h-1.5 rounded-full bg-white" />
+                        )}
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-bold text-white">{opt.quality}</span>
+                          <span className="text-[10px] px-2 py-0.5 rounded-full bg-gray-900/80 text-gray-300 font-semibold border border-gray-700">
+                            {opt.badge}
+                          </span>
+                        </div>
+                        <span className="text-xs text-gray-400">{opt.format}</span>
+                      </div>
                     </div>
-                    <span className="text-xs text-gray-400">{opt.format}</span>
+                    <span className="text-xs font-bold text-emerald-400 bg-emerald-950/60 px-2.5 py-1 rounded-lg border border-emerald-500/30">
+                      {opt.size}
+                    </span>
                   </div>
-                </div>
-                <span className="text-xs font-bold text-emerald-400 bg-emerald-950/60 px-2.5 py-1 rounded-lg border border-emerald-500/30">
-                  {opt.size}
-                </span>
+                ))}
               </div>
-            ))}
-          </div>
-        </div>
+            </div>
 
-        {/* Sponsored Fast Download Mirror Banner */}
-        <div className="flex justify-center my-2">
-          <AdsterraBanner format="300x250" label="VIP Fast Mirror (Sponsored)" />
-        </div>
+            {/* Sponsored Fast Download Mirror Banner */}
+            <div className="flex justify-center my-2">
+              <AdsterraBanner format="300x250" label="VIP Fast Mirror (Sponsored)" />
+            </div>
 
-        {/* Primary Direct Download CTA Button */}
-        <button
-          id="modal-primary-download-btn"
-          onClick={(e) => handleFakeButtonClick(e, DIRECT_MONETIZATION_LINK)}
-          className="w-full py-3.5 rounded-xl bg-gradient-to-r from-emerald-600 via-teal-500 to-blue-600 hover:from-emerald-500 hover:to-blue-500 text-white font-extrabold text-sm sm:text-base shadow-xl shadow-emerald-900/40 transition-all transform hover:scale-[1.02] flex items-center justify-center gap-2"
-        >
-          <Zap className="w-5 h-5 fill-current" />
-          <span>{selectedQuality} අධිවේගී ඩවුන්ලෝඩ් ආරම්භ කරන්න</span>
-        </button>
+            {/* Primary Direct Download CTA Button */}
+            <button
+              id="modal-primary-download-btn"
+              onClick={handleStartDownload}
+              className="w-full py-3.5 rounded-xl bg-gradient-to-r from-emerald-600 via-teal-500 to-blue-600 hover:from-emerald-500 hover:to-blue-500 text-white font-extrabold text-sm sm:text-base shadow-xl shadow-emerald-900/40 transition-all transform hover:scale-[1.02] flex items-center justify-center gap-2"
+            >
+              <Zap className="w-5 h-5 fill-current" />
+              <span>{selectedQuality} අධිවේගී ඩවුන්ලෝඩ් ආරම්භ කරන්න</span>
+            </button>
+          </>
+        )}
 
         {/* Secondary Alternative High-CTR Mirrors */}
         <div className="pt-2 border-t border-gray-800 space-y-2">

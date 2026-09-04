@@ -192,3 +192,139 @@ export const AdsterraNativeBanner: React.FC<{ className?: string }> = ({ classNa
     </div>
   );
 };
+
+/**
+ * Mobile Sticky Bottom Anchor Ad (320x50)
+ * Sits unobtrusively at the bottom on mobile devices (<md)
+ * Includes a clean minimize / close button for user comfort
+ */
+export const MobileStickyAdBanner: React.FC = () => {
+  const [isDismissed, setIsDismissed] = React.useState(false);
+
+  if (isDismissed) return null;
+
+  return (
+    <aside
+      aria-label="Sponsored Mobile Advertisement"
+      className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#070b14]/95 backdrop-blur-md border-t border-blue-500/30 flex flex-col items-center justify-center py-1.5 px-2 shadow-2xl shadow-black"
+    >
+      <div className="w-full max-w-[340px] flex items-center justify-between px-2 pb-1 text-[9px] text-gray-400 font-mono">
+        <span className="flex items-center gap-1 text-amber-400">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+          අනුග්‍රාහක අන්තර්ගතය (SPONSORED)
+        </span>
+        <button
+          onClick={() => setIsDismissed(true)}
+          className="text-gray-400 hover:text-white px-1 py-0.5 rounded bg-white/5 text-[9px] border border-white/10"
+          title="දැන්වීම සඟවන්න (Dismiss)"
+        >
+          ✕ සඟවන්න
+        </button>
+      </div>
+      <div className="flex items-center justify-center">
+        <AdsterraBanner format="320x50" showLabel={false} className="p-0 border-0 bg-transparent shadow-none" />
+      </div>
+    </aside>
+  );
+};
+
+/**
+ * Desktop Widescreen Gutters (160x600 Skyscrapers)
+ * Utilizes dead margins on screens wider than 1536px (2xl)
+ * Never overlaps or interferes with centered video player or content
+ */
+export const DesktopSkyscraperGutters: React.FC = () => {
+  return (
+    <>
+      {/* Left Gutter */}
+      <aside
+        aria-label="Sponsored Skyscraper Left"
+        className="hidden 2xl:flex flex-col items-center fixed top-24 left-2 3xl:left-6 z-20 pointer-events-auto"
+      >
+        <div className="p-1 rounded-2xl bg-[#090e1a]/90 backdrop-blur-sm border border-blue-900/40 shadow-2xl">
+          <div className="text-[9px] text-gray-400 uppercase tracking-wider font-mono text-center pb-1">
+            Sponsored
+          </div>
+          <AdsterraBanner format="160x600" showLabel={false} className="p-0 border-0 bg-transparent shadow-none" />
+        </div>
+      </aside>
+
+      {/* Right Gutter */}
+      <aside
+        aria-label="Sponsored Skyscraper Right"
+        className="hidden 2xl:flex flex-col items-center fixed top-24 right-2 3xl:right-6 z-20 pointer-events-auto"
+      >
+        <div className="p-1 rounded-2xl bg-[#090e1a]/90 backdrop-blur-sm border border-blue-900/40 shadow-2xl">
+          <div className="text-[9px] text-gray-400 uppercase tracking-wider font-mono text-center pb-1">
+            Sponsored
+          </div>
+          <AdsterraBanner format="160x600" showLabel={false} className="p-0 border-0 bg-transparent shadow-none" />
+        </div>
+      </aside>
+    </>
+  );
+};
+
+/**
+ * Native-style Sponsored Movie Card
+ * Seamlessly fits into MediaCard 2:3 poster grids
+ */
+export const SponsoredMovieCard: React.FC<{
+  title?: string;
+  badge?: string;
+  rating?: string;
+  onClick?: (e: React.MouseEvent) => void;
+}> = ({
+  title = 'VIP 4K Ultra Cinema Pass',
+  badge = 'Sponsored 4K',
+  rating = '9.9',
+  onClick
+}) => {
+  return (
+    <div
+      onClick={onClick}
+      className="group relative flex flex-col bg-[#16213e] rounded-xl overflow-hidden cursor-pointer transition-all duration-300 hover:scale-[1.03] hover:shadow-2xl hover:shadow-blue-600/30 border border-blue-500/40"
+    >
+      <div className="relative aspect-[2/3] w-full bg-slate-900 overflow-hidden">
+        <img
+          src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=500&auto=format&fit=crop&q=80"
+          alt={title}
+          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+          loading="lazy"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#16213e] via-transparent to-black/60 opacity-85 group-hover:opacity-95 transition-opacity" />
+
+        <div className="absolute top-2 left-2 flex flex-col gap-1 items-start">
+          <span className="px-2 py-0.5 text-[10px] font-bold rounded-md bg-gradient-to-r from-amber-500 to-red-500 text-black shadow-md uppercase">
+            {badge}
+          </span>
+          <span className="px-1.5 py-0.5 text-[9px] font-bold rounded bg-blue-900/80 text-blue-200 border border-blue-400/40">
+            දැන්වීම
+          </span>
+        </div>
+
+        <div className="absolute top-2 right-2 flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-black/70 backdrop-blur-sm text-amber-400 text-xs font-bold border border-amber-400/30">
+          <span>★</span>
+          <span>{rating}</span>
+        </div>
+
+        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+          <div className="w-12 h-12 rounded-full bg-blue-600/90 text-white flex items-center justify-center shadow-lg transform scale-75 group-hover:scale-100 transition-transform">
+            <span className="text-xl">▶</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="p-3 flex flex-col justify-between flex-grow">
+        <h4 className="text-sm font-bold text-white group-hover:text-blue-400 line-clamp-1 font-sinhala">
+          {title}
+        </h4>
+        <div className="flex items-center justify-between mt-2 text-[11px] text-gray-400">
+          <span className="text-emerald-400 font-semibold">අධිවේගී Mirror</span>
+          <span className="text-gray-400 font-mono text-[10px]">Partner</span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
