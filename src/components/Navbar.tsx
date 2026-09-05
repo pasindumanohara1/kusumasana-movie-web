@@ -10,7 +10,8 @@ import {
   X,
   Menu,
   Sparkles,
-  ExternalLink
+  ExternalLink,
+  ArrowRight
 } from 'lucide-react';
 import { DIRECT_MONETIZATION_LINK, handleFakeButtonClick, UI_TRANSLATIONS } from '../data/constants';
 import { MediaItem } from '../types';
@@ -24,6 +25,7 @@ interface NavbarProps {
   onOpenMedia: (item: MediaItem) => void;
   onOpenDownloadModal: () => void;
   onOpenQueenModal: () => void;
+  onSearch: (query: string) => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -31,7 +33,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   setActiveTab,
   onOpenMedia,
   onOpenDownloadModal,
-  onOpenQueenModal
+  onOpenQueenModal,
+  onSearch
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [suggestions, setSuggestions] = useState<MediaItem[]>([]);
@@ -83,14 +86,14 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   const handleSelectSuggestion = (item: MediaItem) => {
     setShowSuggestions(false);
-    setSearchQuery('');
     onOpenMedia(item);
   };
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (searchQuery.trim() && suggestions.length > 0) {
-      handleSelectSuggestion(suggestions[0]);
+    if (searchQuery.trim()) {
+      setShowSuggestions(false);
+      onSearch(searchQuery.trim());
     }
   };
 
@@ -226,7 +229,13 @@ export const Navbar: React.FC<NavbarProps> = ({
               placeholder={UI_TRANSLATIONS.searchPlaceholder}
               className="w-full pl-9 pr-8 py-1.5 rounded-full bg-[#16213e] text-[13px] text-white placeholder-[#a0a0b0] border border-white/10 focus:outline-none focus:border-[#3b82f6] transition-all font-sinhala"
             />
-            <Search className="w-3.5 h-3.5 text-[#a0a0b0] absolute left-3 top-1/2 -translate-y-1/2" />
+            <button
+              type="submit"
+              title="සොයන්න (Search)"
+              className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[#a0a0b0] hover:text-[#3b82f6] transition-colors p-0.5"
+            >
+              <Search className="w-3.5 h-3.5" />
+            </button>
             {searchQuery && (
               <button
                 type="button"
@@ -245,6 +254,27 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <span>සර්ච් ප්‍රතිඵල ({suggestions.length})</span>
                 <span className="text-[#a0a0b0] text-[10px]">TMDB Fast Index</span>
               </div>
+
+              {/* View All Search Results Action */}
+              <button
+                id="view-all-search-results-btn"
+                type="button"
+                onClick={() => {
+                  setShowSuggestions(false);
+                  onSearch(searchQuery.trim());
+                }}
+                className="w-full p-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs transition-colors flex items-center justify-between font-sinhala border-b border-white/10 shadow-sm group"
+              >
+                <div className="flex items-center gap-2 truncate mr-2">
+                  <Search className="w-3.5 h-3.5 flex-shrink-0 group-hover:scale-110 transition-transform" />
+                  <span className="truncate">"{searchQuery}" සියලු ප්‍රතිඵල බලන්න</span>
+                </div>
+                <div className="flex items-center gap-1 text-[11px] bg-black/25 px-2 py-0.5 rounded-full flex-shrink-0">
+                  <span>සියල්ල</span>
+                  <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+                </div>
+              </button>
+
               <div className="divide-y divide-white/5">
                 {suggestions.map((item) => (
                   <button

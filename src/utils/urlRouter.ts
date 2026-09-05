@@ -8,6 +8,7 @@ export interface ParsedUrlState {
   episode: number;
   tab: string;
   page: number;
+  searchQuery: string;
 }
 
 /**
@@ -22,7 +23,8 @@ export function parseUrlState(): ParsedUrlState {
       season: 1,
       episode: 1,
       tab: 'home',
-      page: 1
+      page: 1,
+      searchQuery: ''
     };
   }
 
@@ -35,6 +37,7 @@ export function parseUrlState(): ParsedUrlState {
   const episode = parseInt(params.get('e') || '1', 10) || 1;
   const tab = params.get('tab') || 'home';
   const page = parseInt(params.get('page') || '1', 10) || 1;
+  const searchQuery = params.get('q') || params.get('search') || '';
 
   return {
     watchId: isNaN(watchId as number) ? null : watchId,
@@ -43,7 +46,8 @@ export function parseUrlState(): ParsedUrlState {
     season,
     episode,
     tab,
-    page
+    page,
+    searchQuery
   };
 }
 
@@ -84,6 +88,19 @@ export function buildTabUrl(tab: string = 'home', page: number = 1): string {
     if (page > 1) {
       url.searchParams.set('page', String(page));
     }
+  }
+  return url.toString();
+}
+
+/**
+ * Builds an absolute deep-link URL for search results
+ */
+export function buildSearchUrl(query: string): string {
+  if (typeof window === 'undefined') return '';
+  const url = new URL(window.location.origin + window.location.pathname);
+  url.searchParams.set('tab', 'search');
+  if (query) {
+    url.searchParams.set('q', query);
   }
   return url.toString();
 }

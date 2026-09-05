@@ -4,10 +4,12 @@ import {
 } from './components/Navbar';
 import { HeroBanner } from './components/HeroBanner';
 import { MediaCard } from './components/MediaCard';
+import { MediaCardSkeleton, MediaSkeletonGrid } from './components/MediaCardSkeleton';
 import { FilterBar } from './components/FilterBar';
 import { WatchView } from './components/WatchView';
 import { DownloadModal } from './components/DownloadModal';
 import { RoyalQueenModal } from './components/RoyalQueenModal';
+import { SearchResultsView } from './components/SearchResultsView';
 import { AdBanner } from './components/AdBanner';
 import { AdsterraBanner, AdsterraResponsiveLeaderboard, AdsterraNativeBanner } from './components/AdsterraBanner';
 import { FakeButtonsBar } from './components/FakeButtonsBar';
@@ -17,7 +19,7 @@ import { WatchlistProvider, useWatchlist } from './context/WatchlistContext';
 import { MediaItem, FilterState } from './types';
 import { tmdbService } from './services/tmdb';
 import { UI_TRANSLATIONS, DIRECT_MONETIZATION_LINK, handleFakeButtonClick } from './data/constants';
-import { parseUrlState, buildWatchUrl, buildTabUrl, syncUrlHistory } from './utils/urlRouter';
+import { parseUrlState, buildWatchUrl, buildTabUrl, buildSearchUrl, syncUrlHistory } from './utils/urlRouter';
 import {
   Flame,
   Film,
@@ -63,10 +65,36 @@ const MainContent: React.FC = () => {
   const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
   const [isQueenModalOpen, setIsQueenModalOpen] = useState(false);
 
+  // Search state
+  const [searchQuery, setSearchQuery] = useState(initialUrl.searchQuery || '');
+  const [searchResults, setSearchResults] = useState<MediaItem[]>([]);
+  const [loadingSearch, setLoadingSearch] = useState(false);
+
   const { watchlist } = useWatchlist();
+
+  const handlePerformSearch = async (query: string) => {
+    const trimmed = query.trim();
+    if (!trimmed) return;
+    setSearchQuery(trimmed);
+    setSelectedMedia(null);
+    setActiveTab('search');
+    setLoadingSearch(true);
+
+    const searchUrl = buildSearchUrl(trimmed);
+    syncUrlHistory(searchUrl, false);
+
+    const results = await tmdbService.searchMulti(trimmed);
+    setSearchResults(results);
+    setLoadingSearch(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   // 1. Initial URL deep-link handling: if URL has ?watch=123, immediately load it
   useEffect(() => {
+    if (initialUrl.tab === 'search' && initialUrl.searchQuery) {
+      handlePerformSearch(initialUrl.searchQuery);
+    }
+
     if (initialUrl.watchId) {
       const type = initialUrl.mediaType || 'movie';
       const id = initialUrl.watchId;
@@ -146,6 +174,14 @@ const MainContent: React.FC = () => {
         setSelectedMedia(null);
         setActiveTab(state.tab || 'home');
         setCurrentPage(state.page || 1);
+        if (state.tab === 'search' && state.searchQuery) {
+          setSearchQuery(state.searchQuery);
+          setLoadingSearch(true);
+          tmdbService.searchMulti(state.searchQuery).then((results) => {
+            setSearchResults(results);
+            setLoadingSearch(false);
+          });
+        }
       }
     };
 
@@ -243,8 +279,13 @@ const MainContent: React.FC = () => {
 
   const handleBackToBrowse = () => {
     setSelectedMedia(null);
-    const tabUrl = buildTabUrl(activeTab, currentPage);
-    syncUrlHistory(tabUrl, false);
+    if (activeTab === 'search' && searchQuery) {
+      const searchUrl = buildSearchUrl(searchQuery);
+      syncUrlHistory(searchUrl, false);
+    } else {
+      const tabUrl = buildTabUrl(activeTab, currentPage);
+      syncUrlHistory(tabUrl, false);
+    }
   };
 
   const handleTabChange = (tab: string) => {
@@ -264,6 +305,7 @@ const MainContent: React.FC = () => {
         onOpenMedia={handleSelectMedia}
         onOpenDownloadModal={() => setIsDownloadModalOpen(true)}
         onOpenQueenModal={() => setIsQueenModalOpen(true)}
+        onSearch={handlePerformSearch}
       />
 
       {/* Main Content Area */}
@@ -482,9 +524,12 @@ const MainContent: React.FC = () => {
                 <AdBanner type="compact" slotName="Movies Filter Bar Top" />
 
                 {loadingBrowse ? (
-                  <div className="py-20 flex flex-col items-center justify-center gap-3">
-                    <div className="w-10 h-10 border-4 border-blue-500/20 border-t-blue-500 rounded-full animate-spin"></div>
-                    <span className="text-sm text-gray-400">චිත්‍රපටි පූරණය වෙමින් පවතී...</span>
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2 text-xs text-blue-400/90 font-sinhala">
+                      <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+                      <span>නවතම HD චිත්‍රපටි පූරණය වෙමින් පවතී...</span>
+                    </div>
+                    <MediaSkeletonGrid count={18} />
                   </div>
                 ) : browseItems.length === 0 ? (
                   <div className="py-16 text-center bg-[#16213e] rounded-2xl border border-gray-800 p-8 space-y-3">
@@ -504,6 +549,11 @@ const MainContent: React.FC = () => {
                       {browseItems.map((item) => (
                         <MediaCard key={item.id} item={item} onSelect={handleSelectMedia} />
                       ))}
+                      {loadingMore && (
+                        Array.from({ length: 6 }).map((_, i) => (
+                          <MediaCardSkeleton key={`loading-more-movies-${i}`} index={i} />
+                        ))
+                      )}
                     </div>
 
                     <AdsterraResponsiveLeaderboard label="Sponsored HD Movies Network" />
@@ -545,9 +595,12 @@ const MainContent: React.FC = () => {
                 <AdBanner type="compact" slotName="TV Filter Bar Top" />
 
                 {loadingBrowse ? (
-                  <div className="py-20 flex flex-col items-center justify-center gap-3">
-                    <div className="w-10 h-10 border-4 border-blue-500/20 border-t-blue-500 rounded-full animate-spin"></div>
-                    <span className="text-sm text-gray-400">ටීවී ෂෝ පූරණය වෙමින් පවතී...</span>
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2 text-xs text-blue-400/90 font-sinhala">
+                      <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+                      <span>නවතම ටීවී ෂෝ පූරණය වෙමින් පවතී...</span>
+                    </div>
+                    <MediaSkeletonGrid count={18} />
                   </div>
                 ) : browseItems.length === 0 ? (
                   <div className="py-16 text-center bg-[#16213e] rounded-2xl border border-gray-800 p-8 space-y-3">
@@ -567,6 +620,11 @@ const MainContent: React.FC = () => {
                       {browseItems.map((item) => (
                         <MediaCard key={item.id} item={item} onSelect={handleSelectMedia} />
                       ))}
+                      {loadingMore && (
+                        Array.from({ length: 6 }).map((_, i) => (
+                          <MediaCardSkeleton key={`loading-more-tv-${i}`} index={i} />
+                        ))
+                      )}
                     </div>
 
                     <AdsterraResponsiveLeaderboard label="Sponsored TV Series Network" />
@@ -633,6 +691,18 @@ const MainContent: React.FC = () => {
                   </div>
                 )}
               </div>
+            )}
+
+            {/* 5. SEARCH RESULTS TAB */}
+            {activeTab === 'search' && (
+              <SearchResultsView
+                query={searchQuery}
+                results={searchResults}
+                isLoading={loadingSearch}
+                onSelectMedia={handleSelectMedia}
+                onSearchAgain={handlePerformSearch}
+                onSelectTab={handleTabChange}
+              />
             )}
           </div>
         )}
