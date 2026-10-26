@@ -95,12 +95,15 @@ export function buildTabUrl(tab: string = 'home', page: number = 1): string {
 /**
  * Builds an absolute deep-link URL for search results
  */
-export function buildSearchUrl(query: string): string {
+export function buildSearchUrl(query: string, page: number = 1): string {
   if (typeof window === 'undefined') return '';
   const url = new URL(window.location.origin + window.location.pathname);
   url.searchParams.set('tab', 'search');
   if (query) {
     url.searchParams.set('q', query);
+  }
+  if (page > 1) {
+    url.searchParams.set('page', String(page));
   }
   return url.toString();
 }

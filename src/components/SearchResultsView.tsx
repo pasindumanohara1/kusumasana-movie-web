@@ -1,8 +1,9 @@
 import React, { useState, useMemo } from 'react';
-import { Search, Film, Tv, Sparkles, AlertCircle, ArrowLeft, Filter } from 'lucide-react';
+import { Search, Film, Tv, Sparkles, AlertCircle, ArrowLeft, Filter, Layers } from 'lucide-react';
 import { MediaItem } from '../types';
 import { MediaCard } from './MediaCard';
-import { MediaSkeletonGrid } from './MediaCardSkeleton';
+import { MediaCardSkeleton, MediaSkeletonGrid } from './MediaCardSkeleton';
+import { PaginationControls } from './PaginationControls';
 import { AdsterraResponsiveLeaderboard, SponsoredMovieCard } from './AdsterraBanner';
 import { DIRECT_MONETIZATION_LINK, handleFakeButtonClick } from '../data/constants';
 
@@ -10,6 +11,12 @@ interface SearchResultsViewProps {
   query: string;
   results: MediaItem[];
   isLoading: boolean;
+  currentPage: number;
+  totalPages: number;
+  totalResults: number;
+  isLoadingMore?: boolean;
+  onPageChange: (page: number) => void;
+  onLoadMore?: () => void;
   onSelectMedia: (item: MediaItem) => void;
   onSearchAgain: (newQuery: string) => void;
   onSelectTab: (tab: string) => void;
@@ -19,6 +26,12 @@ export const SearchResultsView: React.FC<SearchResultsViewProps> = ({
   query,
   results,
   isLoading,
+  currentPage,
+  totalPages,
+  totalResults,
+  isLoadingMore = false,
+  onPageChange,
+  onLoadMore,
   onSelectMedia,
   onSearchAgain,
   onSelectTab
@@ -46,6 +59,14 @@ export const SearchResultsView: React.FC<SearchResultsViewProps> = ({
     return results.filter((item) => item.media_type === filterType);
   }, [results, filterType]);
 
+  const handleLocalPageChange = (page: number) => {
+    onPageChange(page);
+    const elem = document.getElementById('search-results-page');
+    if (elem) {
+      elem.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
   return (
     <div id="search-results-page" className="pt-24 pb-16 max-w-7xl mx-auto px-4 sm:px-6">
       {/* Top Breadcrumb / Return to Home */}
@@ -59,25 +80,51 @@ export const SearchResultsView: React.FC<SearchResultsViewProps> = ({
         </button>
         <span>/</span>
         <span className="text-blue-400 font-semibold font-sinhala">සර්ච් ප්‍රතිඵල</span>
+        {totalPages > 1 && (
+          <>
+            <span>/</span>
+            <span className="text-gray-300 font-mono">පිටුව {currentPage} of {totalPages}</span>
+          </>
+        )}
       </div>
 
       {/* Search Header Banner */}
       <div className="bg-gradient-to-r from-[#121b30] via-[#16213e] to-[#121b30] border border-blue-500/30 rounded-3xl p-5 sm:p-7 mb-8 shadow-xl">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-5">
-          <div className="space-y-1.5">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 text-xs font-semibold border border-blue-500/30">
-              <Search className="w-3.5 h-3.5 text-blue-400" />
-              <span>සර්ච් ප්‍රතිඵල (Search Results)</span>
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 flex-wrap">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 text-xs font-semibold border border-blue-500/30">
+                <Search className="w-3.5 h-3.5 text-blue-400" />
+                <span>සර්ච් ප්‍රතිඵල (Search Results)</span>
+              </div>
+              {totalPages > 1 && (
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-semibold border border-emerald-500/30 font-mono">
+                  <Layers className="w-3 h-3" />
+                  <span>Page {currentPage} / {totalPages}</span>
+                </div>
+              )}
             </div>
+
             <h1 className="text-2xl sm:text-3xl font-extrabold text-white font-sinhala flex items-center gap-2 flex-wrap">
               <span>"</span>
               <span className="text-blue-400 underline decoration-blue-500/50 underline-offset-4">{query}</span>
               <span>" සඳහා ප්‍රතිඵල</span>
             </h1>
-            <p className="text-xs sm:text-sm text-gray-400">
-              {isLoading
-                ? 'තොරතුරු ලබා ගනිමින් පවතී...'
-                : `මුළු ප්‍රතිඵල ${results.length} ක් හමු විය (${moviesCount} චිත්‍රපටි, ${tvCount} ටීවී ෂෝ)`}
+
+            <p className="text-xs sm:text-sm text-gray-300 font-sinhala">
+              {isLoading ? (
+                'තොරතුරු ලබා ගනිමින් පවතී...'
+              ) : (
+                <>
+                  මුළු ප්‍රතිඵල <span className="font-bold text-blue-400 font-mono">{(totalResults || results.length).toLocaleString()}</span> ක් හමු විය 
+                  {totalPages > 1 && (
+                    <>
+                      {' '}• පිටු ගණන: <span className="font-bold text-white font-mono">{totalPages}</span> (වත්මන් පිටුව: <span className="text-blue-400 font-mono">{currentPage}</span>)
+                    </>
+                  )}
+                  {' '}<span className="text-gray-400 text-xs">({moviesCount} චිත්‍රපටි, {tvCount} ටීවී ෂෝ මේ පිටුවේ)</span>
+                </>
+              )}
             </p>
           </div>
 
@@ -210,12 +257,31 @@ export const SearchResultsView: React.FC<SearchResultsViewProps> = ({
                 onSelect={onSelectMedia}
               />
             ))}
+
+            {/* Skeleton placeholders when loading next batch */}
+            {isLoadingMore &&
+              Array.from({ length: 6 }).map((_, i) => (
+                <MediaCardSkeleton key={`search-loading-more-${i}`} index={i} />
+              ))
+            }
           </div>
 
           {/* Adsterra Leaderboard Banner */}
           <div className="my-6">
             <AdsterraResponsiveLeaderboard label="Sponsored Search Media Network" />
           </div>
+
+          {/* Pagination Controls for dividing all search results across pages */}
+          {totalPages > 1 && (
+            <PaginationControls
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handleLocalPageChange}
+              onLoadMore={currentPage < totalPages ? onLoadMore : undefined}
+              isLoadingMore={isLoadingMore}
+              hasMore={currentPage < totalPages}
+            />
+          )}
         </div>
       )}
     </div>

@@ -51,12 +51,19 @@ export const UI_TRANSLATIONS = {
   nextEpisode: 'ඊළඟ කොටස',
   theaterMode: 'තීටර් මොඩ්',
   
-  // Footer & Royal
-  copyright: '© 2026 කුසුමාසන දේවි Cinema (Vidbanda/SFlix Engine). සියලුම හිමිකම් ඇවිරිණි.',
+  // Footer & sinhalasub.lk Branding
+  copyright: '© 2026 sinhalasub.lk (sinhalasublk.duckdns.org). සියලුම හිමිකම් ඇවිරිණි.',
   disclaimer: 'TMDB API මගින් සබඳතාවය ලබාගෙන ඇත. අපි කිසිදු වීඩියෝ ගොනුවක් අපගේ සර්වර් වල තබා නොගනිමු.',
-  queenTributeTitle: 'කුසුමාසන දේවිය (දෝන කැතරිනා රැජිණ)',
-  queenSubtitle: 'උඩරට රාජධානියේ පිරිසිදු රාජකීය ලේ උරුමය - සිරි සඟබෝ රාජ වංශය'
+  brandName: 'sinhalasub.lk',
+  brandDomain: 'sinhalasublk.duckdns.org',
+  brandFullUrl: 'https://sinhalasublk.duckdns.org',
+  queenTributeTitle: 'sinhalasub.lk - නිල තොරතුරු සහ සිංහල උපසිරැසි මධ්‍යස්ථානය',
+  queenSubtitle: 'නවතම චිත්‍රපටි, ටීවී ෂෝ සහ සිංහල උපසිරැසි (Sinhala Subtitles) 1080p HD'
 };
+
+export const WEBSITE_NAME = 'sinhalasub.lk';
+export const WEBSITE_DOMAIN = 'sinhalasublk.duckdns.org';
+export const WEBSITE_FULL_URL = 'https://sinhalasublk.duckdns.org';
 
 // 14 Iframe Stream Providers with URL generation rules
 export const STREAM_SERVERS: StreamServer[] = [
@@ -382,26 +389,64 @@ export function handleFakeButtonClick(
   }
 }
 
-// Historical details of Queen Kusumasana Devi (දෝන කැතරිනා රැජිණ)
-export const QUEEN_KUSUMASANA_DEVI_HISTORY = {
-  name: 'කුසුම් අස්ථාන දෝන කතරිනා ලෝකනාථා මහා බිසෝ බණ්ඩාර',
-  title: 'උඩරට රැජිණ / මහනුවර රැජින (Queen of Kandy)',
-  reign: '1581 - 1592',
-  dynasty: 'සිරි සඟබෝ රාජ වංශය (Siri Sangabo Dynasty)',
-  father: 'කරලියැද්දේ බණ්ඩාර රජ (King Karaliyadde Bandara)',
-  mother: 'ගලඋඩ අස්ථාන දේවීය',
-  spouse: 'දොන් පිලිප් කුමාරයා හෙවත් යමසිංහ බණ්ඩාර, පළමුවන විමලධර්ම සූරිය රජු, සෙනරත් රජු',
-  children: [
-    'මහඅස්ථාන කුමරු (මරණය 1612 අගෝස්තු 23)',
-    'සූරිය දේවි (මරණය 1617)',
-    'සාම දේවී',
-    'කුමාරසිංහ හස්තානේ (ඌව)',
-    'විජයපාල (මාතලේ අධිකාරී)',
-    'දේව අස්ථාන කුමරු'
+// Official sinhalasub.lk Platform Information & Guide
+export const SINHALASUB_PLATFORM_INFO = {
+  name: 'sinhalasub.lk',
+  sinhalaName: 'සිංහලසබ්.lk',
+  title: 'ශ්‍රී ලංකාවේ ප්‍රමුඛතම සිංහල උපසිරැසි සහ සිනමා මධ්‍යස්ථානය',
+  domain: 'sinhalasublk.duckdns.org',
+  fullUrl: 'https://sinhalasublk.duckdns.org',
+  tagline: 'නවතම චිත්‍රපටි සහ TV Shows සිංහල උපසිරැසි (Sinhala Subtitles) සමඟ 1080p HD තාක්ෂණයෙන්',
+  description:
+    'sinhalasub.lk (sinhalasublk.duckdns.org) යනු ලොව පුරා නිකුත්වන නවතම හොලිවුඩ්, බොලිවුඩ්, දෙමළ, තෙළිඟු, මලයාලම්, කොරියානු සහ සිංහල චිත්‍රපටි හා ටෙලි කතා මාලා (TV Shows) නොමිලේම නැරඹීමට සහ 1080p HD වලින් ඩවුන්ලෝඩ් කරගැනීමට නිර්මාණය කළ ශ්‍රී ලාංකීය ප්‍රමුඛතම සිනමා වේදිකාවයි.',
+  features: [
+    {
+      id: 'subtitles',
+      title: 'සිංහල උපසිරැසි (Sinhala Subtitles)',
+      desc: 'සියලුම නව නිකුත් කිරීම් සඳහා නිවැරදි, උසස් ගුණාත්මක සිංහල උපසිරැසි සහ බහු-භාෂා Audio tracks සහය.'
+    },
+    {
+      id: 'speed',
+      title: '14+ අධිවේගී Server Cloud',
+      desc: 'VidSrc, VidLink 4K, MultiEmbed ඇතුළු අධිවේගී Cloud Nodes 14 කින් buffer-free නැරඹීමේ හැකියාව.'
+    },
+    {
+      id: 'downloads',
+      title: 'සෘජු HD 1080p Cloud Downloads',
+      desc: 'Ultra Fast Cloud CDN හා Direct Mirror සබැඳි හරහා ඕනෑම චිත්‍රපටියක් තත්පර කිහිපයකින් බාගත කරගැනීම.'
+    },
+    {
+      id: 'mobile',
+      title: 'Mobile, Tablet & TV Friendly',
+      desc: 'ඕනෑම ස්මාර්ට් ජංගම දුරකථනයකට, පරිගණකයකට හෝ Smart TV එකකට ගැළපෙන නවීන UI අතුරුමුහුණත.'
+    }
   ],
-  burial: 'අස්ගිරිය සුසාන භූමිය, වර්තමාන අස්ගිරි මහා විහාරය',
+  channels: [
+    { name: 'නිල Web අඩවිය', value: 'sinhalasublk.duckdns.org' },
+    { name: 'වීඩියෝ තාක්ෂණය', value: '1080p / 4K Ultra HD & Sinhala Subs' },
+    { name: 'දත්ත මූලාශ්‍රය', value: 'TMDB Public Engine & Cloud CDNs' },
+    { name: 'ආරක්ෂාව', value: 'SSL Encrypted & Safe Streaming' }
+  ],
   tribute:
-    'මහනුවර රාජධානියේ විසූ එකම පිරිසිදු සිංහල රාජකීය ලේ උරුමය සහිත එකම බිසව වූයේ කුසුමාසන දේවිය හෙවත් දෝන කැතරිනා රැජිනයි. කුඩා කල සිට රාජ්‍යත්වයට තිබූ උරුමය නිසා බොහෝ දුක් ගැහැට වලට මුහුණ දුන් බැවින්, කුසුමාසන දේවිය සිංහල රාජාවලියේ "කඳුළු බිංදුව" ලෙසින් ඉතිහාසයට එක්ව ඇත.',
-  historySummary:
-    'සීතාවක පළමුවන රාජසිංහ රජු උඩරට ආක්‍රමණය කළ පසු, කරලියැද්දේ බණ්ඩාර රජුගේ දියණිය වූ කුසුමාසන දේවිය රැකවරණ පතා පෘතුගීසීන් වෙත ගොස් දෝන කැතරිනා ලෙස නම් ලැබුවාය. පසුව උඩරට සිහසුනට පත් පළමුවන විමලධර්මසූරිය රජු ඇයව සරණපාවා ගනිමින් උඩරට රාජ්‍යයේ සිංහල රාජකීය උරුමය තහවුරු කළේය.'
+    'sinhalasub.lk හරහා නොමිලේ උපසිරැසි සහ සිනමා රසවින්දනය විඳගන්න. අපගේ නිල වෙබ් ලිපිනය sinhalasublk.duckdns.org සුරැකිව තබාගන්න.'
+};
+
+// Aliased for legacy references
+export const QUEEN_KUSUMASANA_DEVI_HISTORY = {
+  name: SINHALASUB_PLATFORM_INFO.name,
+  title: SINHALASUB_PLATFORM_INFO.title,
+  reign: '2026 Official',
+  dynasty: 'sinhalasublk.duckdns.org',
+  father: 'Sinhala Subtitles Community',
+  mother: 'Sri Lanka HD Cinema Hub',
+  spouse: 'Fast Cloud Mirror Network',
+  children: [
+    '1080p Full HD Streaming',
+    'සිංහල උපසිරැසි (Sinhala Subtitles)',
+    'Direct Cloud Downloads',
+    'Multi-Server Failover Nodes'
+  ],
+  burial: 'sinhalasublk.duckdns.org',
+  tribute: SINHALASUB_PLATFORM_INFO.tribute,
+  historySummary: SINHALASUB_PLATFORM_INFO.description
 };

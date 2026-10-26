@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  Crown,
+  Globe,
   Heart,
   Film,
   Send,
@@ -12,7 +12,7 @@ import {
   Sparkles,
   ExternalLink
 } from 'lucide-react';
-import { DIRECT_MONETIZATION_LINK, handleFakeButtonClick, UI_TRANSLATIONS } from '../data/constants';
+import { DIRECT_MONETIZATION_LINK, handleFakeButtonClick, UI_TRANSLATIONS, WEBSITE_DOMAIN } from '../data/constants';
 
 interface FooterProps {
   onOpenQueenModal: () => void;
@@ -26,40 +26,38 @@ export const Footer: React.FC<FooterProps> = ({
   onSelectTab
 }) => {
   return (
-    <footer id="main-footer" className="bg-[#0a0a1a] border-t border-white/10 text-[#a0a0b0] text-sm">
+    <footer id="main-footer" className="bg-[#07070b] border-t border-white/10 text-[#a0a0b0] text-sm">
       {/* Top Banner Accent */}
-      <div className="h-0.5 bg-gradient-to-r from-transparent via-[#3b82f6] to-transparent" />
+      <div className="h-0.5 bg-gradient-to-r from-transparent via-red-600 to-transparent" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-8 py-12 space-y-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* Col 1: Brand and Historical Tribute */}
+          {/* Col 1: Brand and Platform Info */}
           <div className="space-y-4 md:col-span-1">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               <img
-                src="/logo.png"
-                alt="කුසුමාසන දේවි"
-                className="w-10 h-10 object-contain filter drop-shadow-[0_0_8px_rgba(234,179,8,0.4)]"
+                src="/icon-1.png"
+                alt="sinhalasub.lk"
+                className="h-9 w-auto max-w-[170px] object-contain filter drop-shadow-[0_0_10px_rgba(239,68,68,0.4)]"
               />
-              <div className="flex flex-col">
-                <span className="font-extrabold text-lg text-[#3b82f6] font-sinhala">
-                  කුසුමාසන දේවි
-                </span>
-                <span className="text-[11px] text-[#a0a0b0] font-sans tracking-wider">
-                  KUSUMASANA DEVI CINEMA
-                </span>
-              </div>
             </div>
             <p className="text-xs text-[#a0a0b0] leading-relaxed font-sinhala">
-              උඩරට රාජධානියේ දෝන කැතරිනා රැජිණගේ අභිමානය පෙරදැරි කරගත්, නොමිලේ සිංහල උපසිරැසි සහ 1080p HD චිත්‍රපටි ප්‍රවාහ ජාලය.
+              ශ්‍රී ලංකාවේ ප්‍රමුඛතම සිංහල උපසිරැසි (Sinhala Subtitles) සහ 1080p HD සිනමා ප්‍රවාහ ජාලය. නවතම චිත්‍රපටි සහ TV Shows නොමිලේ නරඹන්න.
             </p>
-            <button
-              id="footer-queen-history-btn"
-              onClick={onOpenQueenModal}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-[#16213e] hover:bg-[#1f2d52] border border-white/10 text-amber-300 text-xs font-semibold transition-all font-sinhala"
-            >
-              <Crown className="w-3.5 h-3.5 text-amber-400" />
-              <span>ඓතිහාසික විස්තර කියවන්න</span>
-            </button>
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-black/50 border border-white/10 text-xs text-gray-300 font-mono">
+              <Globe className="w-3.5 h-3.5 text-red-500" />
+              <span>sinhalasublk.duckdns.org</span>
+            </div>
+            <div>
+              <button
+                id="footer-queen-history-btn"
+                onClick={onOpenQueenModal}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-red-950/40 hover:bg-red-900/60 border border-red-500/30 text-red-300 text-xs font-semibold transition-all font-sinhala"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-red-400" />
+                <span>sinhalasub.lk මධ්‍යස්ථානය</span>
+              </button>
+            </div>
           </div>
 
           {/* Col 2: Navigation Links */}
@@ -180,14 +178,14 @@ export const Footer: React.FC<FooterProps> = ({
         {/* Bottom Copyright & Disclaimer bar */}
         <div className="pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#a0a0b0]">
           <p className="font-sinhala text-center sm:text-left">
-            © 2026 Vidbanda / කුසුමාසන දේවි සිනමා. සියලුම හිමිකම් ඇවිරිණි.
+            © 2026 sinhalasub.lk (sinhalasublk.duckdns.org). සියලුම හිමිකම් ඇවිරිණි.
           </p>
           <div className="flex items-center gap-4 text-[11px]">
             <span>Powered by TMDB Public Index</span>
             <span>•</span>
-            <span className="text-amber-400 flex items-center gap-1 font-sinhala">
-              <Crown className="w-3 h-3 text-amber-400" />
-              <span>සිරි සඟබෝ රාජ වංශය</span>
+            <span className="text-red-400 flex items-center gap-1.5 font-mono">
+              <Sparkles className="w-3.5 h-3.5 text-red-400" />
+              <span>sinhalasublk.duckdns.org</span>
             </span>
           </div>
         </div>

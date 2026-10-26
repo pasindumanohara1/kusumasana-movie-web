@@ -1,8 +1,9 @@
-import React from 'react';
-import { Play, Plus, Check, Star, Sparkles } from 'lucide-react';
+import React, { useState } from 'react';
+import { Play, Plus, Check, Star, Share2 } from 'lucide-react';
 import { MediaItem } from '../types';
 import { getImageUrl } from '../services/tmdb';
 import { useWatchlist } from '../context/WatchlistContext';
+import { buildWatchUrl } from '../utils/urlRouter';
 
 interface MediaCardProps {
   item: MediaItem;
@@ -13,6 +14,7 @@ interface MediaCardProps {
 export const MediaCard: React.FC<MediaCardProps> = ({ item, onSelect, priority = false }) => {
   const { isInWatchlist, toggleWatchlist } = useWatchlist();
   const inList = isInWatchlist(item.id);
+  const [copied, setCopied] = useState(false);
 
   const releaseYear = (item.release_date || item.first_air_date || '2024').split('-')[0];
   const isMovie = item.media_type === 'movie';
@@ -21,6 +23,39 @@ export const MediaCard: React.FC<MediaCardProps> = ({ item, onSelect, priority =
   const handleBookmarkClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     toggleWatchlist(item);
+  };
+
+  const handleShareClick = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const shareUrl = buildWatchUrl(item);
+    const shareTitle = item.sinhalaTitle || item.title || item.name || 'sinhalasub.lk';
+    const shareText = `Watch ${item.title || item.name || 'film'} on sinhalasub.lk with Sinhala Subtitles`;
+
+    if (typeof navigator !== 'undefined' && navigator.share) {
+      try {
+        await navigator.share({
+          title: shareTitle,
+          text: shareText,
+          url: shareUrl,
+        });
+        return;
+      } catch (err: any) {
+        if (err?.name === 'AbortError') {
+          return;
+        }
+      }
+    }
+
+    // Fallback: Copy URL to clipboard
+    if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      } catch (clipboardErr) {
+        console.warn('Clipboard write failed', clipboardErr);
+      }
+    }
   };
 
   return (
@@ -54,10 +89,26 @@ export const MediaCard: React.FC<MediaCardProps> = ({ item, onSelect, priority =
 
         {/* Hover Overlay with Action Buttons */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-3 z-20">
-          {/* Top bookmark button */}
-          <div className="flex justify-end">
+          {/* Top action buttons: Share + Bookmark */}
+          <div className="flex justify-between items-center w-full">
+            <button
+              id={`share-btn-overlay-${item.id}`}
+              type="button"
+              onClick={handleShareClick}
+              className={`p-1.5 rounded-full backdrop-blur-md transition-all ${
+                copied
+                  ? 'bg-emerald-500 text-black shadow-md'
+                  : 'bg-black/60 text-white hover:bg-emerald-600'
+              }`}
+              title={copied ? 'ලින්ක් එක කොපි විය! (Copied)' : 'ශෙයා කරන්න (Share)'}
+              aria-label="Share"
+            >
+              {copied ? <Check className="w-3.5 h-3.5 stroke-[3]" /> : <Share2 className="w-3.5 h-3.5 stroke-[2.5]" />}
+            </button>
+
             <button
               id={`bookmark-btn-${item.id}`}
+              type="button"
               onClick={handleBookmarkClick}
               className={`p-1.5 rounded-full backdrop-blur-md transition-all ${
                 inList
@@ -65,6 +116,7 @@ export const MediaCard: React.FC<MediaCardProps> = ({ item, onSelect, priority =
                   : 'bg-black/60 text-white hover:bg-[#3b82f6]'
               }`}
               title={inList ? 'මගේ ලිස්ට් එකෙන් ඉවත් කරන්න' : 'මගේ ලිස්ට් එකට එක් කරන්න'}
+              aria-label="Bookmark"
             >
               {inList ? <Check className="w-3.5 h-3.5 stroke-[3]" /> : <Plus className="w-3.5 h-3.5 stroke-[3]" />}
             </button>
@@ -88,12 +140,29 @@ export const MediaCard: React.FC<MediaCardProps> = ({ item, onSelect, priority =
 
       {/* Card Body below poster */}
       <div className="p-2.5">
-        <h3
-          title={displayTitle}
-          className="text-[13px] font-semibold text-white font-sinhala truncate mb-1 group-hover:text-[#3b82f6] transition-colors"
-        >
-          {displayTitle}
-        </h3>
+        <div className="flex items-start justify-between gap-1 mb-1">
+          <h3
+            title={displayTitle}
+            className="text-[13px] font-semibold text-white font-sinhala truncate group-hover:text-[#3b82f6] transition-colors flex-1"
+          >
+            {displayTitle}
+          </h3>
+          {/* Subtle share button directly on card for mobile / direct clicks */}
+          <button
+            type="button"
+            id={`share-btn-card-${item.id}`}
+            onClick={handleShareClick}
+            className={`p-1 rounded transition-colors -mt-0.5 ${
+              copied
+                ? 'text-emerald-400 bg-emerald-500/10'
+                : 'text-gray-400 hover:text-white hover:bg-white/10'
+            }`}
+            title={copied ? 'Copied!' : 'Share'}
+            aria-label="Share"
+          >
+            {copied ? <Check className="w-3.5 h-3.5" /> : <Share2 className="w-3.5 h-3.5" />}
+          </button>
+        </div>
         <div className="flex items-center justify-between text-[11px] text-[#a0a0b0]">
           <span>{releaseYear}</span>
           <span className="text-[#22c55e] font-semibold">

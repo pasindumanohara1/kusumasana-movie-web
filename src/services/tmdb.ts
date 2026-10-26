@@ -1,4 +1,4 @@
-import { CastMember, MediaDetails, MediaItem, SeasonInfo, FilterState } from '../types';
+import { CastMember, MediaDetails, MediaItem, SeasonInfo, EpisodeInfo, FilterState, SearchResultsResponse } from '../types';
 
 const API_KEY = 'aa4f947818d885e4addb8684a408dbaf';
 const BASE_URL = 'https://api.themoviedb.org/3';
@@ -309,12 +309,21 @@ export const tmdbService = {
 
       const trailers = (data.videos?.results || []).filter((v: any) => v.type === 'Trailer' && v.site === 'YouTube');
 
-      const seasons: SeasonInfo[] = (data.seasons || []).map((s: any) => ({
-        season_number: s.season_number,
-        name: s.name || `Season ${s.season_number}`,
-        episode_count: s.episode_count || 10,
-        poster_path: s.poster_path
-      }));
+      // Filter out Specials (season 0) so season count and numbering are strictly accurate
+      const rawSeasons = Array.isArray(data.seasons) ? data.seasons : [];
+      const regularSeasons: SeasonInfo[] = rawSeasons
+        .filter((s: any) => typeof s.season_number === 'number' && s.season_number > 0)
+        .map((s: any) => ({
+          season_number: s.season_number,
+          name: s.name || `Season ${s.season_number}`,
+          episode_count: typeof s.episode_count === 'number' && s.episode_count > 0 ? s.episode_count : 10,
+          poster_path: s.poster_path
+        }))
+        .sort((a, b) => a.season_number - b.season_number);
+
+      const actualNumSeasons = typeof data.number_of_seasons === 'number' && data.number_of_seasons > 0
+        ? data.number_of_seasons
+        : (regularSeasons.length > 0 ? regularSeasons.length : 1);
 
       const base = this.mapTMDBItem(data, mediaType);
       return {
@@ -325,19 +334,37 @@ export const tmdbService = {
           sinhalaName: GENRE_MAP[g.id]?.si || g.name
         })),
         runtime: data.runtime || (data.episode_run_time ? data.episode_run_time[0] : 120),
-        number_of_seasons: data.number_of_seasons || seasons.length,
+        number_of_seasons: actualNumSeasons,
         number_of_episodes: data.number_of_episodes,
         status: data.status,
         tagline: data.tagline,
         imdb_id: data.imdb_id || (data.external_ids?.imdb_id),
         cast,
         trailers,
-        seasons: seasons.filter(s => s.season_number > 0)
+        seasons: regularSeasons
       };
     }
 
     // Curated fallback details
     const fallback = CURATED_FEATURED_ITEMS.find((item) => String(item.id) === String(id)) || CURATED_FEATURED_ITEMS[0];
+    const isTv = fallback.media_type === 'tv';
+    // Parse duration like "2 Seasons", "1 Season", "8 Seasons"
+    let parsedSeasons = 1;
+    if (isTv && fallback.duration) {
+      const match = fallback.duration.match(/(\d+)\s*Season/i);
+      if (match) {
+        parsedSeasons = parseInt(match[1], 10) || 1;
+      }
+    }
+
+    const fallbackSeasons: SeasonInfo[] = isTv
+      ? Array.from({ length: parsedSeasons }).map((_, i) => ({
+          season_number: i + 1,
+          name: `Season ${i + 1} (${i === 0 ? 'පළමු අදියර' : i === 1 ? 'දෙවන අදියර' : `${i + 1} වන අදියර`})`,
+          episode_count: fallback.id === 94605 ? 9 : fallback.id === 114472 ? 8 : 8
+        }))
+      : [];
+
     return {
       ...fallback,
       genres: [
@@ -346,33 +373,85 @@ export const tmdbService = {
         { id: 53, name: 'Thriller', sinhalaName: 'කුතුහල' }
       ],
       runtime: 128,
-      number_of_seasons: fallback.media_type === 'tv' ? 2 : undefined,
+      number_of_seasons: isTv ? parsedSeasons : undefined,
       cast: [
         { id: 1, name: 'Lead Performer', character: 'Protagonist', profile_path: null },
         { id: 2, name: 'Co-Star Actor', character: 'Antagonist', profile_path: null },
         { id: 3, name: 'Supporting Artist', character: 'Allied Officer', profile_path: null }
       ],
       trailers: [{ id: 'trailer1', key: 'dQw4w9WgXcQ', name: 'Official HD Trailer', site: 'YouTube', type: 'Trailer' }],
-      seasons: [
-        { season_number: 1, name: 'Season 1 (පළමු අදියර)', episode_count: 8 },
-        { season_number: 2, name: 'Season 2 (දෙවන අදියර)', episode_count: 8 }
-      ]
+      seasons: fallbackSeasons
+    };
+  },
+
+  async getSeasonEpisodes(tvId: number | string, seasonNumber: number): Promise<EpisodeInfo[]> {
+    const data = await fetchFromTMDB<{ episodes?: any[] }>(`/tv/${tvId}/season/${seasonNumber}`);
+    if (data && Array.isArray(data.episodes) && data.episodes.length > 0) {
+      return data.episodes.map((ep: any) => ({
+        id: ep.id,
+        episode_number: ep.episode_number,
+        season_number: ep.season_number || seasonNumber,
+        name: ep.name || `Episode ${ep.episode_number}`,
+        overview: ep.overview || '',
+        still_path: ep.still_path || null,
+        air_date: ep.air_date,
+        vote_average: ep.vote_average,
+        runtime: ep.runtime
+      }));
+    }
+    return [];
+  },
+
+  async searchMultiPaginated(query: string, page: number = 1): Promise<SearchResultsResponse> {
+    const trimmed = query.trim();
+    if (!trimmed) {
+      return { results: [], page: 1, totalPages: 1, totalResults: 0 };
+    }
+    const data = await fetchFromTMDB<{
+      page?: number;
+      results?: any[];
+      total_pages?: number;
+      total_results?: number;
+    }>('/search/multi', { query: trimmed, page });
+
+    if (data && data.results) {
+      const items = data.results
+        .filter((item) => item.media_type === 'movie' || item.media_type === 'tv')
+        .map((item) => this.mapTMDBItem(item, item.media_type));
+
+      return {
+        results: items,
+        page: data.page || page,
+        totalPages: Math.min(data.total_pages || 1, 500),
+        totalResults: data.total_results || items.length
+      };
+    }
+
+    // Local filter fallback with simulated pagination
+    const q = trimmed.toLowerCase();
+    const allFallback = CURATED_FEATURED_ITEMS.filter(
+      (item) =>
+        item.title.toLowerCase().includes(q) ||
+        (item.sinhalaTitle && item.sinhalaTitle.toLowerCase().includes(q)) ||
+        item.overview.toLowerCase().includes(q)
+    );
+    const pageSize = 18;
+    const totalPages = Math.max(1, Math.ceil(allFallback.length / pageSize));
+    const safePage = Math.min(Math.max(1, page), totalPages);
+    const startIndex = (safePage - 1) * pageSize;
+    const pageResults = allFallback.slice(startIndex, startIndex + pageSize);
+
+    return {
+      results: pageResults,
+      page: safePage,
+      totalPages,
+      totalResults: allFallback.length
     };
   },
 
   async searchMulti(query: string, page: number = 1): Promise<MediaItem[]> {
-    if (!query.trim()) return [];
-    const data = await fetchFromTMDB<{ results: any[] }>('/search/multi', { query, page });
-    if (data && data.results) {
-      return data.results
-        .filter((item) => item.media_type === 'movie' || item.media_type === 'tv')
-        .map((item) => this.mapTMDBItem(item, item.media_type));
-    }
-    // Local filter fallback
-    const q = query.toLowerCase();
-    return CURATED_FEATURED_ITEMS.filter(
-      (item) => item.title.toLowerCase().includes(q) || item.overview.toLowerCase().includes(q)
-    );
+    const response = await this.searchMultiPaginated(query, page);
+    return response.results;
   },
 
   async discoverMedia(mediaType: 'movie' | 'tv', filters: FilterState, page: number = 1): Promise<MediaItem[]> {

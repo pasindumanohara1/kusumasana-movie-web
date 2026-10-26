@@ -69,30 +69,72 @@ const MainContent: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState(initialUrl.searchQuery || '');
   const [searchResults, setSearchResults] = useState<MediaItem[]>([]);
   const [loadingSearch, setLoadingSearch] = useState(false);
+  const [searchCurrentPage, setSearchCurrentPage] = useState(initialUrl.tab === 'search' ? (initialUrl.page || 1) : 1);
+  const [searchTotalPages, setSearchTotalPages] = useState(1);
+  const [searchTotalResults, setSearchTotalResults] = useState(0);
+  const [loadingMoreSearch, setLoadingMoreSearch] = useState(false);
 
   const { watchlist } = useWatchlist();
 
-  const handlePerformSearch = async (query: string) => {
+  const handlePerformSearch = async (
+    query: string,
+    page: number = 1,
+    append: boolean = false
+  ) => {
     const trimmed = query.trim();
     if (!trimmed) return;
     setSearchQuery(trimmed);
     setSelectedMedia(null);
     setActiveTab('search');
-    setLoadingSearch(true);
+    setSearchCurrentPage(page);
 
-    const searchUrl = buildSearchUrl(trimmed);
-    syncUrlHistory(searchUrl, false);
+    if (append) {
+      setLoadingMoreSearch(true);
+    } else {
+      setLoadingSearch(true);
+    }
 
-    const results = await tmdbService.searchMulti(trimmed);
-    setSearchResults(results);
-    setLoadingSearch(false);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    const searchUrl = buildSearchUrl(trimmed, page);
+    syncUrlHistory(searchUrl, append);
+
+    const data = await tmdbService.searchMultiPaginated(trimmed, page);
+
+    if (append) {
+      setSearchResults((prev) => {
+        const existingIds = new Set(prev.map((i) => `${i.media_type}-${i.id}`));
+        const filteredNew = data.results.filter((item) => !existingIds.has(`${item.media_type}-${item.id}`));
+        return [...prev, ...filteredNew];
+      });
+      setLoadingMoreSearch(false);
+    } else {
+      setSearchResults(data.results);
+      setLoadingSearch(false);
+      const searchElem = document.getElementById('search-results-page');
+      if (searchElem) {
+        searchElem.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+
+    setSearchTotalPages(data.totalPages);
+    setSearchTotalResults(data.totalResults);
+  };
+
+  const handleSearchPageChange = (newPage: number) => {
+    if (newPage < 1 || newPage === searchCurrentPage) return;
+    handlePerformSearch(searchQuery, newPage, false);
+  };
+
+  const handleSearchLoadMore = () => {
+    const nextPage = searchCurrentPage + 1;
+    handlePerformSearch(searchQuery, nextPage, true);
   };
 
   // 1. Initial URL deep-link handling: if URL has ?watch=123, immediately load it
   useEffect(() => {
     if (initialUrl.tab === 'search' && initialUrl.searchQuery) {
-      handlePerformSearch(initialUrl.searchQuery);
+      handlePerformSearch(initialUrl.searchQuery, initialUrl.page || 1, false);
     }
 
     if (initialUrl.watchId) {
@@ -176,11 +218,7 @@ const MainContent: React.FC = () => {
         setCurrentPage(state.page || 1);
         if (state.tab === 'search' && state.searchQuery) {
           setSearchQuery(state.searchQuery);
-          setLoadingSearch(true);
-          tmdbService.searchMulti(state.searchQuery).then((results) => {
-            setSearchResults(results);
-            setLoadingSearch(false);
-          });
+          handlePerformSearch(state.searchQuery, state.page || 1, false);
         }
       }
     };
@@ -280,7 +318,7 @@ const MainContent: React.FC = () => {
   const handleBackToBrowse = () => {
     setSelectedMedia(null);
     if (activeTab === 'search' && searchQuery) {
-      const searchUrl = buildSearchUrl(searchQuery);
+      const searchUrl = buildSearchUrl(searchQuery, searchCurrentPage);
       syncUrlHistory(searchUrl, false);
     } else {
       const tabUrl = buildTabUrl(activeTab, currentPage);
@@ -699,8 +737,14 @@ const MainContent: React.FC = () => {
                 query={searchQuery}
                 results={searchResults}
                 isLoading={loadingSearch}
+                currentPage={searchCurrentPage}
+                totalPages={searchTotalPages}
+                totalResults={searchTotalResults}
+                isLoadingMore={loadingMoreSearch}
+                onPageChange={handleSearchPageChange}
+                onLoadMore={handleSearchLoadMore}
                 onSelectMedia={handleSelectMedia}
-                onSearchAgain={handlePerformSearch}
+                onSearchAgain={(newQ) => handlePerformSearch(newQ, 1, false)}
                 onSelectTab={handleTabChange}
               />
             )}
@@ -715,7 +759,7 @@ const MainContent: React.FC = () => {
         mediaTitle={selectedMedia ? selectedMedia.sinhalaTitle || selectedMedia.title : undefined}
       />
 
-      {/* Historical Queen Kusumasana Devi Tribute Modal */}
+      {/* Official sinhalasub.lk Platform & Subtitle Guide Modal */}
       <RoyalQueenModal
         isOpen={isQueenModalOpen}
         onClose={() => setIsQueenModalOpen(false)}
@@ -723,7 +767,7 @@ const MainContent: React.FC = () => {
 
       {/* Global Above-Footer Adsterra Responsive Leaderboard */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 my-6">
-        <AdsterraResponsiveLeaderboard label="Sponsored Global Network (Kusumasana Cinema)" />
+        <AdsterraResponsiveLeaderboard label="Sponsored Global Network (sinhalasub.lk)" />
       </div>
 
       {/* Global Footer */}

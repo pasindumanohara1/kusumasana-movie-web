@@ -95,3 +95,11 @@ export interface FakeButtonIdea {
   badge?: string;
   colorClass?: string;
 }
+
+export interface SearchResultsResponse {
+  results: MediaItem[];
+  page: number;
+  totalPages: number;
+  totalResults: number;
+}
+

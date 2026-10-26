@@ -11,12 +11,13 @@ interface WatchlistContextType {
 
 const WatchlistContext = createContext<WatchlistContextType | undefined>(undefined);
 
-const STORAGE_KEY = 'kusumasana-watchlist-v1';
+const STORAGE_KEY = 'sinhalasub-watchlist-v2';
+const LEGACY_STORAGE_KEY = 'kusumasana-watchlist-v1';
 
 export const WatchlistProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [watchlist, setWatchlist] = useState<MediaItem[]>(() => {
     try {
-      const saved = localStorage.getItem(STORAGE_KEY);
+      const saved = localStorage.getItem(STORAGE_KEY) || localStorage.getItem(LEGACY_STORAGE_KEY);
       return saved ? JSON.parse(saved) : [];
     } catch (e) {
       console.error('Failed to parse watchlist from localStorage', e);

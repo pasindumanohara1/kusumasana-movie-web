@@ -108,40 +108,26 @@ export const Navbar: React.FC<NavbarProps> = ({
           <button
             id="nav-logo-btn"
             onClick={() => setActiveTab('home')}
-            className="flex items-center gap-3 group text-left focus:outline-none"
+            className="flex items-center gap-2 group text-left focus:outline-none py-1"
           >
-            <div className="relative w-9 h-9 sm:w-10 sm:h-10 flex-shrink-0">
+            <div className="relative h-9 sm:h-10 flex-shrink-0 flex items-center">
               <img
-                src="/logo.png"
-                alt="කුසුමාසන දේවි Cinema Logo"
-                className="w-full h-full object-contain filter drop-shadow-[0_0_8px_rgba(234,179,8,0.45)] transition-transform duration-300 group-hover:scale-105"
+                src="/icon-1.png"
+                alt="sinhalasub.lk"
+                className="h-8 sm:h-9 w-auto max-w-[170px] sm:max-w-[200px] object-contain filter drop-shadow-[0_0_10px_rgba(239,68,68,0.45)] transition-transform duration-300 group-hover:scale-105"
               />
-              <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500"></span>
-              </span>
-            </div>
-            <div className="flex flex-col">
-              <div className="flex items-center gap-2">
-                <span className="font-extrabold text-xl sm:text-2xl tracking-wide text-[#3b82f6] font-sinhala group-hover:text-blue-400 transition-colors">
-                  කුසුමාසන දේවි
-                </span>
-              </div>
-              <span className="text-[11px] text-[#a0a0b0] font-sans tracking-tight hidden md:inline">
-                Kusumasana Devi Cinema
-              </span>
             </div>
           </button>
 
-          {/* Queen Tribute Badge */}
+          {/* sinhalasub.lk Hub Badge */}
           <button
             id="nav-queen-history-btn"
             onClick={onOpenQueenModal}
-            className="hidden xl:flex items-center gap-1.5 ml-2 px-2.5 py-1 rounded-full bg-[#16213e] hover:bg-[#1f2d52] border border-white/10 text-amber-300 text-xs font-medium transition-all"
-            title="දෝන කැතරිනා රැජිණගේ ඓතිහාසික තොරතුරු කියවන්න"
+            className="hidden xl:flex items-center gap-1.5 ml-1 px-2.5 py-1 rounded-full bg-red-950/40 hover:bg-red-900/60 border border-red-500/30 text-red-300 text-xs font-medium transition-all"
+            title="sinhalasub.lk නිල තොරතුරු සහ උපසිරැසි මධ්‍යස්ථානය"
           >
-            <Crown className="w-3.5 h-3.5 text-amber-400" />
-            <span className="font-sinhala">දෝන කැතරිනා රැජිණ</span>
+            <Sparkles className="w-3.5 h-3.5 text-red-400" />
+            <span className="font-sinhala font-semibold">sinhalasub.lk Hub</span>
           </button>
         </div>
 
@@ -428,10 +414,10 @@ export const Navbar: React.FC<NavbarProps> = ({
                 onOpenQueenModal();
                 setMobileMenuOpen(false);
               }}
-              className="flex items-center justify-center gap-2 py-2.5 rounded-lg bg-[#16213e] text-amber-300 border border-white/10 text-xs font-bold"
+              className="flex items-center justify-center gap-2 py-2.5 rounded-lg bg-red-950/40 text-red-300 border border-red-500/30 text-xs font-bold"
             >
-              <Crown className="w-4 h-4" />
-              <span>දෝන කැතරිනා</span>
+              <Sparkles className="w-4 h-4 text-red-400" />
+              <span>sinhalasub.lk Hub</span>
             </button>
           </div>
         </div>

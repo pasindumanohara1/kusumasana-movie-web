@@ -17,28 +17,46 @@
 
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/png" href="/logo.png" />
+    <link rel="icon" type="image/png" href="/icon-1.png" />
+    <link rel="canonical" href="https://sinhalasublk.duckdns.org/" />
     
     <!-- Primary SEO Title & Description -->
-    <title>කුසුමාසන දේවි Cinema - Watch Sinhala Movies & TV Shows Online Free HD</title>
-    <meta name="title" content="කුසුමාසන දේවි Cinema - Watch Sinhala Movies & TV Shows Online Free HD" />
-    <meta name="description" content="Kusumasana Devi Cinema එකෙන් නවතම සිංහල චිත්‍රපටි, ටීවී ෂෝ සහ HD Movies නොමිලේ නරඹන්න. Fast streaming, Sinhala subtitles, 1080p HD downloads available." />
+    <title>sinhalasub.lk - Watch Sinhala Movies & TV Shows Online Free HD</title>
+    <meta name="title" content="sinhalasub.lk - Watch Sinhala Movies & TV Shows Online Free HD" />
+    <meta name="description" content="sinhalasub.lk එකෙන් නවතම සිංහල උපසිරැසි (Sinhala Subtitles) සහිත චිත්‍රපටි, ටීවී ෂෝ සහ HD Movies නොමිලේ නරඹන්න. Fast streaming, Sinhala subtitles, 1080p HD downloads available." />
     <meta name="robots" content="index, follow" />
 
     <!-- Target Keywords -->
-    <meta name="keywords" content="Kusumasana Devi, Kusumasana Devi full movie, Sinhala movies online, Watch Sinhala movies free, Sinhala subtitles, Sinhala dubbing movies, Cinesubz, Baiscope, Sinhalasub, HD Sinhala films, Sri Lanka cinema streaming, Download Sinhala movies, 1080p Sinhala movies, TV shows Sinhala, Kusumasana Devi streaming, කුසුමාසන දේවි, දෝන කැතරිනා, සිංහල චිත්‍රපටි, සිනමා" />
+    <meta name="keywords" content="sinhalasub.lk, sinhalasub, sinhalasublk, sinhalasublk.duckdns.org, Sinhala subtitles, Sinhala sub movies, Watch Sinhala movies online, Sinhala dubbing, Cinesubz, Baiscope, HD Sinhala films, Sri Lanka cinema streaming, Download Sinhala movies, 1080p Sinhala movies, TV shows Sinhala, සිංහල උපසිරැසි, සිංහල චිත්‍රපටි, සිනමා" />
 
     <!-- Open Graph / Facebook Meta Tags -->
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="කුසුමාසන දේවි Cinema - Watch Sinhala Movies Online Free" />
-    <meta property="og:description" content="නවතම සිංහල චිත්‍රපටි සහ TV Shows නොමිලේ 1080p HD තාක්ෂණයෙන් නරඹන්න." />
-    <meta property="og:image" content="/logo.png" />
+    <meta property="og:url" content="https://sinhalasublk.duckdns.org/" />
+    <meta property="og:title" content="sinhalasub.lk - Watch Sinhala Subtitle Movies Online Free" />
+    <meta property="og:description" content="නවතම සිංහල උපසිරැසි සහිත චිත්‍රපටි සහ TV Shows නොමිලේ 1080p HD තාක්ෂණයෙන් sinhalasub.lk හරහා නරඹන්න." />
+    <meta property="og:image" content="/icon-1.png" />
 
     <!-- Twitter Meta Tags -->
     <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:title" content="කුසුමාසන දේවි Cinema" />
-    <meta property="twitter:description" content="Watch Sinhala Movies & TV Shows in HD for free on Kusumasana Devi." />
-    <meta property="twitter:image" content="/logo.png" />
+    <meta property="twitter:title" content="sinhalasub.lk" />
+    <meta property="twitter:description" content="Watch Sinhala Movies & TV Shows in HD for free on sinhalasub.lk (sinhalasublk.duckdns.org)." />
+    <meta property="twitter:image" content="/icon-1.png" />
+
+    <!-- JSON-LD Structured Data for sinhalasub.lk -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "sinhalasub.lk",
+      "alternateName": ["SinhalaSub", "sinhalasublk", "සිංහලසබ්.lk"],
+      "url": "https://sinhalasublk.duckdns.org/",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://sinhalasublk.duckdns.org/?tab=search&q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
 
     <!-- Google Fonts for Inter, Montserrat, Abhaya Libre and Noto Sans Sinhala -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -53,7 +71,7 @@
         left: 0;
         width: 100vw;
         height: 100vh;
-        background-color: #0a0a1a;
+        background-color: #07070b;
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -65,35 +83,49 @@
       .logo-container {
         position: relative;
         display: flex;
+        flex-direction: column;
         justify-content: center;
         align-items: center;
+        padding: 20px;
       }
 
       .animating-logo {
-        width: 110px;
-        height: 110px;
+        max-width: 280px;
+        width: 80vw;
+        height: auto;
+        max-height: 85px;
         object-fit: contain;
         animation: logoPulse 1.8s infinite ease-in-out;
         z-index: 2;
       }
 
-      .loading-ring {
+      .loading-progress {
+        width: 180px;
+        height: 3px;
+        background: rgba(239, 68, 68, 0.2);
+        border-radius: 9999px;
+        overflow: hidden;
+        margin-top: 18px;
+        position: relative;
+      }
+
+      .loading-progress-bar {
         position: absolute;
-        width: 155px;
-        height: 155px;
-        border: 3px solid rgba(59, 130, 246, 0.15);
-        border-top: 3px solid #ffd700;
-        border-right: 3px solid #3b82f6;
-        border-radius: 50%;
-        animation: spinRing 1.2s linear infinite;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 45%;
+        background: linear-gradient(90deg, #ef4444, #dc2626);
+        border-radius: 9999px;
+        animation: progressSlide 1.2s ease-in-out infinite;
       }
 
       .preloader-title {
-        margin-top: 24px;
+        margin-top: 16px;
         font-family: 'Noto Sans Sinhala', 'Montserrat', sans-serif;
         color: #e2e8f0;
-        font-size: 1.1rem;
-        font-weight: 600;
+        font-size: 1.05rem;
+        font-weight: 700;
         letter-spacing: 0.05em;
         display: flex;
         align-items: center;
@@ -101,27 +133,29 @@
       }
 
       @keyframes logoPulse {
-        0% { transform: scale(0.95); opacity: 0.85; filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.4)); }
-        50% { transform: scale(1.08); opacity: 1; filter: drop-shadow(0 0 22px rgba(59, 130, 246, 0.8)); }
-        100% { transform: scale(0.95); opacity: 0.85; filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.4)); }
+        0% { transform: scale(0.97); opacity: 0.9; filter: drop-shadow(0 0 10px rgba(239, 68, 68, 0.4)); }
+        50% { transform: scale(1.04); opacity: 1; filter: drop-shadow(0 0 24px rgba(239, 68, 68, 0.85)); }
+        100% { transform: scale(0.97); opacity: 0.9; filter: drop-shadow(0 0 10px rgba(239, 68, 68, 0.4)); }
       }
 
-      @keyframes spinRing {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
+      @keyframes progressSlide {
+        0% { left: -45%; }
+        100% { left: 100%; }
       }
     </style>
   </head>
-  <body class="bg-[#0a0a1a] text-[#ffffff] font-sans antialiased overflow-x-hidden selection:bg-blue-600 selection:text-white">
+  <body class="bg-[#07070b] text-[#ffffff] font-sans antialiased overflow-x-hidden selection:bg-red-600 selection:text-white">
     <!-- Logo Preloader Animation -->
     <div id="preloader">
       <div class="logo-container">
-        <img src="/logo.png" alt="කුසුමාසන දේවි Cinema Logo" class="animating-logo" />
-        <div class="loading-ring"></div>
+        <img src="/icon-1.png" alt="sinhalasub.lk Logo" class="animating-logo" />
+        <div class="loading-progress">
+          <div class="loading-progress-bar"></div>
+        </div>
       </div>
       <div class="preloader-title">
-        <span class="text-amber-400">කුසුමාසන දේවි</span>
-        <span class="text-xs px-2 py-0.5 rounded bg-blue-600/30 text-blue-400 border border-blue-500/30">CINEMA HD</span>
+        <span class="text-white font-extrabold font-mono tracking-wide">sinhalasub<span class="text-red-500">.lk</span></span>
+        <span class="text-xs px-2.5 py-0.5 rounded-full bg-red-600/25 text-red-400 border border-red-500/30 font-mono font-semibold">CINEMA HD</span>
       </div>
     </div>
 

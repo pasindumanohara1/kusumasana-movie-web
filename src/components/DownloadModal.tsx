@@ -23,7 +23,7 @@ interface DownloadModalProps {
 export const DownloadModal: React.FC<DownloadModalProps> = ({
   isOpen,
   onClose,
-  mediaTitle = 'කුසුමාසන දේවි Cinema Feature'
+  mediaTitle = 'sinhalasub.lk Cinema Feature'
 }) => {
   const [selectedQuality, setSelectedQuality] = useState('1080p');
   const [countdown, setCountdown] = useState<number | null>(null);

@@ -15,7 +15,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({ item, onWatch, onMoreInf
   const displayOverview =
     item.sinhalaOverview ||
     item.overview ||
-    'කුසුමාසන දේවි සිනමා හරහා නොමිලේ 1080p HD තාක්ෂණයෙන් නරඹන්න.';
+    'sinhalasub.lk හරහා නොමිලේ 1080p HD තාක්ෂණයෙන් සහ සිංහල උපසිරැසි සමඟ නරඹන්න.';
   const releaseYear = (item.release_date || item.first_air_date || '2024').split('-')[0];
 
   return (

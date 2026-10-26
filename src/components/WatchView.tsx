@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import {
   Play,
   Share2,
@@ -23,9 +23,10 @@ import {
   Maximize,
   Minimize,
   Monitor,
-  Wifi
+  Wifi,
+  Tv
 } from 'lucide-react';
-import { MediaDetails, MediaItem, StreamServer } from '../types';
+import { MediaDetails, MediaItem, StreamServer, SeasonInfo, EpisodeInfo } from '../types';
 import { tmdbService, getImageUrl } from '../services/tmdb';
 import {
   DIRECT_MONETIZATION_LINK,
@@ -66,6 +67,8 @@ export const WatchView: React.FC<WatchViewProps> = ({
   const [currentServer, setCurrentServer] = useState<StreamServer>(STREAM_SERVERS[0]);
   const [selectedSeason, setSelectedSeason] = useState(initialSeason || 1);
   const [selectedEpisode, setSelectedEpisode] = useState(initialEpisode || 1);
+  const [seasonEpisodes, setSeasonEpisodes] = useState<EpisodeInfo[]>([]);
+  const [loadingEpisodes, setLoadingEpisodes] = useState(false);
   const [showTrailerModal, setShowTrailerModal] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
@@ -79,6 +82,12 @@ export const WatchView: React.FC<WatchViewProps> = ({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const { isInWatchlist, toggleWatchlist } = useWatchlist();
   const inList = isInWatchlist(mediaItem.id);
+
+  // Synchronize state when new media or initial season/episode are passed
+  useEffect(() => {
+    setSelectedSeason(initialSeason || 1);
+    setSelectedEpisode(initialEpisode || 1);
+  }, [mediaItem.id, initialSeason, initialEpisode]);
 
   // Monitor document fullscreen state
   useEffect(() => {
@@ -145,6 +154,72 @@ export const WatchView: React.FC<WatchViewProps> = ({
       isMounted = false;
     };
   }, [mediaItem.id, mediaItem.media_type]);
+
+  // Derive valid available regular seasons
+  const availableSeasons: SeasonInfo[] = useMemo(() => {
+    if (mediaItem.media_type !== 'tv') return [];
+    if (details?.seasons && details.seasons.length > 0) {
+      return details.seasons;
+    }
+    const count = typeof details?.number_of_seasons === 'number' && details.number_of_seasons > 0
+      ? details.number_of_seasons
+      : 1;
+    return Array.from({ length: count }).map((_, idx) => ({
+      season_number: idx + 1,
+      name: `Season ${idx + 1}`,
+      episode_count: 10
+    }));
+  }, [details, mediaItem.media_type]);
+
+  // Ensure selectedSeason is strictly valid for this show
+  useEffect(() => {
+    if (mediaItem.media_type !== 'tv' || availableSeasons.length === 0) return;
+    const seasonValid = availableSeasons.some((s) => s.season_number === selectedSeason);
+    if (!seasonValid) {
+      setSelectedSeason(availableSeasons[0].season_number);
+      setSelectedEpisode(1);
+    }
+  }, [availableSeasons, selectedSeason, mediaItem.media_type]);
+
+  const currentSeasonInfo = availableSeasons.find((s) => s.season_number === selectedSeason) || availableSeasons[0];
+  const fallbackEpisodeCount = currentSeasonInfo?.episode_count && currentSeasonInfo.episode_count > 0
+    ? currentSeasonInfo.episode_count
+    : 10;
+
+  // Fetch real episodes for the currently selected season
+  useEffect(() => {
+    if (mediaItem.media_type !== 'tv' || !mediaItem.id) return;
+    let isCurrent = true;
+    setLoadingEpisodes(true);
+
+    async function loadEpisodes() {
+      try {
+        const eps = await tmdbService.getSeasonEpisodes(mediaItem.id, selectedSeason);
+        if (isCurrent) {
+          setSeasonEpisodes(eps);
+          setLoadingEpisodes(false);
+          const effectiveCount = eps.length > 0 ? eps.length : fallbackEpisodeCount;
+          if (selectedEpisode > effectiveCount) {
+            setSelectedEpisode(1);
+          }
+        }
+      } catch (err) {
+        if (isCurrent) {
+          setSeasonEpisodes([]);
+          setLoadingEpisodes(false);
+        }
+      }
+    }
+
+    loadEpisodes();
+    return () => {
+      isCurrent = false;
+    };
+  }, [mediaItem.id, mediaItem.media_type, selectedSeason, fallbackEpisodeCount]);
+
+  const currentSeasonEpisodeCount = seasonEpisodes.length > 0
+    ? seasonEpisodes.length
+    : fallbackEpisodeCount;
 
   const currentWatchUrl = buildWatchUrl(mediaItem, selectedSeason, selectedEpisode);
 
@@ -638,43 +713,63 @@ export const WatchView: React.FC<WatchViewProps> = ({
                 <h3 className="text-lg font-bold text-white font-sinhala">
                   කාලයන් සහ කොටස් (Seasons & Episodes)
                 </h3>
+                <span className="text-xs bg-blue-500/15 text-blue-400 border border-blue-500/30 px-2 py-0.5 rounded-full font-bold">
+                  {availableSeasons.length} {availableSeasons.length === 1 ? 'Season' : 'Seasons'}
+                </span>
               </div>
 
               {/* Season Tabs */}
-              <div className="flex items-center gap-2 overflow-x-auto">
-                {Array.from({ length: details?.number_of_seasons || 3 }).map((_, idx) => {
-                  const sNum = idx + 1;
+              <div className="flex items-center gap-2 overflow-x-auto pb-1 max-w-full">
+                {availableSeasons.map((season) => {
+                  const sNum = season.season_number;
+                  const isCurrent = selectedSeason === sNum;
                   return (
                     <button
                       key={sNum}
                       id={`season-tab-${sNum}`}
+                      type="button"
                       onClick={() => {
                         setSelectedSeason(sNum);
                         setSelectedEpisode(1);
                         setIframeLoading(true);
                       }}
-                      className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                        selectedSeason === sNum
+                      className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 ${
+                        isCurrent
                           ? 'bg-blue-600 text-white shadow-md'
                           : 'bg-[#0a0a1a] text-gray-400 hover:text-white hover:bg-gray-800'
                       }`}
                     >
-                      Season {sNum}
+                      <span>{season.name || `Season ${sNum}`}</span>
+                      <span className={`text-[10px] px-1.5 py-0.5 rounded font-mono ${isCurrent ? 'bg-black/30 text-white' : 'bg-white/5 text-gray-400'}`}>
+                        {season.episode_count} Ep
+                      </span>
                     </button>
                   );
                 })}
               </div>
             </div>
 
-            {/* Episode Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2.5 pt-2">
-              {Array.from({ length: 12 }).map((_, idx) => {
+            {/* Episode Grid Header */}
+            <div className="flex items-center justify-between text-xs text-gray-400">
+              <span className="font-medium text-gray-300">
+                {currentSeasonInfo?.name || `Season ${selectedSeason}`} • {currentSeasonEpisodeCount} Episodes Total
+              </span>
+              {loadingEpisodes && (
+                <span className="text-[11px] text-blue-400 animate-pulse">Loading episodes info...</span>
+              )}
+            </div>
+
+            {/* Episode Grid with Actual Count */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2.5 pt-1">
+              {Array.from({ length: currentSeasonEpisodeCount }).map((_, idx) => {
                 const epNum = idx + 1;
+                const epDetail = seasonEpisodes.find((e) => e.episode_number === epNum);
                 const isCurrent = selectedEpisode === epNum;
                 return (
                   <button
                     key={epNum}
                     id={`episode-btn-${epNum}`}
+                    type="button"
                     onClick={() => {
                       setSelectedEpisode(epNum);
                       setIframeLoading(true);
@@ -685,26 +780,57 @@ export const WatchView: React.FC<WatchViewProps> = ({
                         ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/40 ring-2 ring-blue-400'
                         : 'bg-[#0a0a1a] hover:bg-[#0f3460] text-gray-300'
                     }`}
+                    title={epDetail?.name ? `Episode ${epNum}: ${epDetail.name}` : `Episode ${epNum}`}
                   >
                     <span className="text-xs font-bold">Episode {epNum}</span>
-                    <span className="text-[10px] opacity-75 mt-0.5">HD • 45m</span>
+                    <span className="text-[10px] opacity-75 mt-0.5 truncate max-w-full text-center">
+                      {epDetail?.name && epDetail.name !== `Episode ${epNum}`
+                        ? epDetail.name
+                        : epDetail?.runtime ? `${epDetail.runtime}m` : 'HD • 45m'}
+                    </span>
                   </button>
                 );
               })}
             </div>
 
-            {/* Point #3: TV Show Next Episode & VIP Binge Pass */}
+            {/* TV Show Next Episode & VIP Binge Pass */}
             <div className="pt-3 border-t border-gray-800 flex flex-col sm:flex-row items-center justify-between gap-3">
               <div className="flex items-center gap-2 text-xs text-gray-400">
-                <Sparkles className="w-4 h-4 text-amber-400" />
-                <span>ඊළඟ කොටස: Episode {selectedEpisode + 1} (1080p Ultra HD Fast)</span>
+                <Sparkles className="w-4 h-4 text-amber-400 shrink-0" />
+                {selectedEpisode < currentSeasonEpisodeCount ? (
+                  <span>ඊළඟ කොටස: Episode {selectedEpisode + 1} (1080p Ultra HD Fast)</span>
+                ) : selectedSeason < availableSeasons.length ? (
+                  <span>ඊළඟ කාලය: Season {selectedSeason + 1}, Episode 1 (1080p Ultra HD)</span>
+                ) : (
+                  <span className="text-emerald-400 font-semibold">අවසාන කොටස (Season Finale Complete)</span>
+                )}
               </div>
               <button
                 id="fake-next-ep-btn"
-                onClick={(e) => handleFakeButtonClick(e, DIRECT_MONETIZATION_LINK)}
+                type="button"
+                onClick={(e) => {
+                  if (selectedEpisode < currentSeasonEpisodeCount) {
+                    setSelectedEpisode(selectedEpisode + 1);
+                    setIframeLoading(true);
+                    scrollToPlayer();
+                  } else if (selectedSeason < availableSeasons.length) {
+                    setSelectedSeason(selectedSeason + 1);
+                    setSelectedEpisode(1);
+                    setIframeLoading(true);
+                    scrollToPlayer();
+                  } else {
+                    handleFakeButtonClick(e, DIRECT_MONETIZATION_LINK);
+                  }
+                }}
                 className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-md text-xs font-bold transition-all"
               >
-                <span>VIP Binge Pass: ඊළඟ කොටස වෙත යන්න</span>
+                <span>
+                  {selectedEpisode < currentSeasonEpisodeCount
+                    ? `Next Episode: Ep ${selectedEpisode + 1}`
+                    : selectedSeason < availableSeasons.length
+                    ? `Next Season: S${selectedSeason + 1} E1`
+                    : 'VIP Binge Pass: Full HD Ultra'}
+                </span>
                 <Play className="w-3 h-3 fill-current" />
               </button>
             </div>
